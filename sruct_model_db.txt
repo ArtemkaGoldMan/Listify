@@ -1,0 +1,9 @@
+Model of project:
+
+
+Tab:
+	1. User: userID, telegramUserId, List_of_content, List_of_tags (user one to one list, user one to one list_of_tags)
+	2. List_of_content: contentID (List one to many content)
+	3. Content: Name, Description, tags (Content one to one {Name, Description}, Content on to many tags)
+	4. List_of_tags: tagID (List_of_tags one to many tagID)
+	5. Tag: tagID, Name, Description (Tag one to one {Name, Description})

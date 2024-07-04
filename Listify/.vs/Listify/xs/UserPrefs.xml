@@ -1,4 +1,38 @@
-﻿<Properties>
-  <MultiItemStartupConfigurations />
+﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints />
   <MonoDevelop.Ide.ItemProperties.BaseLibrary FirstBuild="True" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="BaseLibrary/Entities/ListOfTags.cs">
+    <Files>
+      <File FileName="BaseLibrary/Entities/User.cs" />
+      <File FileName="BaseLibrary/Entities/ListOfContent.cs" />
+      <File FileName="BaseLibrary/Entities/Content.cs" />
+      <File FileName="BaseLibrary/Entities/ListOfTags.cs" Line="19" Column="1" />
+      <File FileName="BaseLibrary/Entities/Tag.cs" />
+      <File FileName="BaseLibrary/Entities/ContentTag.cs" />
+      <File FileName="BaseLibrary/DTOs/UserDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ListOfContentDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ContentDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ListOfTagsDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/TagDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ContentTagDTO.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Listify">
+            <Node name="BaseLibrary">
+              <Node name="DTOs" expanded="True" />
+              <Node name="Entities" expanded="True">
+                <Node name="ListOfTags.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.Server FirstBuild="True" PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

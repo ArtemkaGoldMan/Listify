@@ -11,6 +11,7 @@ namespace BaseLibrary.Entities
 
         public string? Name { get; set; }
         public string? Description { get; set; }
+        public string? ImageUrl { get; set; }
 
         public int ListOfContentID { get; set; }
         [ForeignKey("ListOfContentID")]

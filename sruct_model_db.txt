@@ -1,9 +1,31 @@
-Model of project:
+### Entities and Relationships:
 
+1. **User**: 
+   - `UserID` (primary key)
+   - `TelegramUserID`
+   - `ListOfContentID` (foreign key)
+   - `ListOfTagsID` (foreign key)
 
-Tab:
-	1. User: userID, telegramUserId, List_of_content, List_of_tags (user one to one list, user one to one list_of_tags)
-	2. List_of_content: contentID (List one to many content)
-	3. Content: Name, Description, tags (Content one to one {Name, Description}, Content on to many tags)
-	4. List_of_tags: tagID (List_of_tags one to many tagID)
-	5. Tag: tagID, Name, Description (Tag one to one {Name, Description})
+2. **ListOfContent**:
+   - `ListOfContentID` (primary key)
+   - `UserID` (foreign key)
+
+3. **Content**:
+   - `ContentID` (primary key)
+   - `Name`
+   - `Description`
+   - `ListOfContentID` (foreign key)
+
+4. **ListOfTags**:
+   - `ListOfTagsID` (primary key)
+   - `UserID` (foreign key)
+
+5. **Tag**:
+   - `TagID` (primary key)
+   - `Name`
+   - `Description`
+   - `ListOfTagsID` (foreign key)
+
+6. **ContentTag** (Junction table for many-to-many relationship between Content and Tag):
+   - `ContentID` (foreign key)
+   - `TagID` (foreign key)

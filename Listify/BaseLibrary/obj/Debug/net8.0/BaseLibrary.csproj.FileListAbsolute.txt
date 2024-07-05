@@ -1,0 +1,12 @@
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/bin/Debug/net8.0/BaseLibrary.deps.json
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/bin/Debug/net8.0/BaseLibrary.dll
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/bin/Debug/net8.0/BaseLibrary.pdb
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.GeneratedMSBuildEditorConfig.editorconfig
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.AssemblyInfoInputs.cache
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.AssemblyInfo.cs
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.csproj.CoreCompileInputs.cache
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.sourcelink.json
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.dll
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/refint/BaseLibrary.dll
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/BaseLibrary.pdb
+/Users/artemo/Projects/Listify_Project/Listify/BaseLibrary/obj/Debug/net8.0/ref/BaseLibrary.dll

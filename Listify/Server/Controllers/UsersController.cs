@@ -1,13 +1,12 @@
-﻿using System;
-using BaseLibrary.Entities;
+﻿using BaseLibrary.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using ServerLibrary.Repositories.Contracts;
+using System.Threading.Tasks;
 
 namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -17,10 +16,18 @@ namespace Server.Controllers
             _userRepository = userRepository;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        [HttpPost("CreateUser")]
+        public async Task<IActionResult> CreateUser([FromBody] UserDTO userDto)
         {
-            var createdUser = await _userRepository.CreateUserAsync(user);
+            // Ensure the DTO does not contain UserID
+            if (userDto.UserID != 0)
+            {
+                ModelState.AddModelError("UserID", "UserID should not be specified.");
+                return BadRequest(ModelState);
+            }
+
+            var createdUser = await _userRepository.CreateUserAsync(userDto);
+
             return CreatedAtAction(nameof(GetUserById), new { userId = createdUser.UserID }, createdUser);
         }
 
@@ -44,16 +51,6 @@ namespace Server.Controllers
             return Ok(user);
         }
 
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] User user)
-        {
-            var updatedUser = await _userRepository.UpdateUserAsync(userId, user);
-            if (updatedUser == null)
-                return NotFound();
-
-            return Ok(updatedUser);
-        }
-
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
@@ -65,4 +62,3 @@ namespace Server.Controllers
         }
     }
 }
-

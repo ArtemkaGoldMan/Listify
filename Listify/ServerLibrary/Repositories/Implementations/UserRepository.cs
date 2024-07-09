@@ -1,60 +1,84 @@
-﻿using System;
+﻿using BaseLibrary.DTOs;
 using BaseLibrary.Entities;
 using Microsoft.EntityFrameworkCore;
 using ServerLibrary.Data;
 using ServerLibrary.Repositories.Contracts;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServerLibrary.Repositories.Implementations
 {
-	public class UserRepository : IUserRepository
-	{
+    public class UserRepository : IUserRepository
+    {
         private readonly AppDbContext _context;
 
-		public UserRepository(AppDbContext context)
-		{
-            _context = context;
-		}
-
-        public async Task<User> CreateUserAsync(User user)
+        public UserRepository(AppDbContext context)
         {
-            _context.Users.Add(user);
+            _context = context;
+        }
+
+        public async Task<UserDTO> CreateUserAsync(UserDTO user)
+        {
+            var newUser = new User
+            {
+                TelegramUserID = user.TelegramUserID
+            };
+
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+
+            //user.UserID = newUser.UserID; 
+
             return user;
         }
 
-        public Task<bool> DeleteUserAsync(int userId)
+        public async Task<bool> DeleteUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return false;
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<User> GetUserByIdAsync(int userId)
+
+        public async Task<UserDTO> GetUserByIdAsync(int userId)
         {
-            return await _context.Users
+            var user = await _context.Users
                 .Include(u => u.ListOfContent)
                 .Include(u => u.ListOfTags)
                 .FirstOrDefaultAsync(u => u.UserID == userId);
+
+            if (user == null)
+                return null;
+
+            return new UserDTO
+            {
+                UserID = user.UserID,
+                TelegramUserID = user.TelegramUserID
+                //include ListOfContentDTO and ListOfTagsDTO here if needed
+            };
         }
 
-        public async Task<User> GetUserByTelegramUserIdAsync(string telegramUserId)
+        public async Task<UserDTO> GetUserByTelegramUserIdAsync(string telegramUserId)
         {
-            return await _context.Users
+            var user = await _context.Users
                 .Include(u => u.ListOfContent)
                 .Include(u => u.ListOfTags)
                 .FirstOrDefaultAsync(u => u.TelegramUserID == telegramUserId);
+
+            if (user == null)
+                return null;
+
+            return new UserDTO
+            {
+                UserID = user.UserID,
+                TelegramUserID = user.TelegramUserID
+                //include ListOfContentDTO and ListOfTagsDTO here if needed
+            };
         }
-
-        public async Task<User> UpdateUserAsync(int userId, User user)
-        {
-            var existingUser = await GetUserByIdAsync(userId);
-            if (existingUser == null) return null;
-
-            existingUser.TelegramUserID = user.TelegramUserID; // there can be added other changes if i wi
-
-            _context.Users.Update(existingUser);
-            await _context.SaveChangesAsync();
-            return existingUser;
-        }
-
     }
 }
-

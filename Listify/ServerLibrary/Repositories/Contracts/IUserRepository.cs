@@ -1,15 +1,13 @@
-﻿using System;
-using BaseLibrary.Entities;
+﻿using BaseLibrary.DTOs;
+using System.Threading.Tasks;
 
 namespace ServerLibrary.Repositories.Contracts
 {
-	public interface IUserRepository
-	{
-        Task<User> CreateUserAsync(User user);
-        Task<User> GetUserByIdAsync(int userId);
-        Task<User> GetUserByTelegramUserIdAsync(string telegramUserId);
-        Task<User> UpdateUserAsync(int userId, User user);
+    public interface IUserRepository
+    {
+        Task<UserDTO> CreateUserAsync(UserDTO user);
+        Task<UserDTO> GetUserByIdAsync(int userId);
+        Task<UserDTO> GetUserByTelegramUserIdAsync(string telegramUserId);
         Task<bool> DeleteUserAsync(int userId);
     }
 }
-

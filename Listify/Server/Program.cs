@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using ServerLibrary.Data;
 using ServerLibrary.Repositories.Contracts;
 using ServerLibrary.Repositories.Implementations;
@@ -21,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IContentRepository, ContentRepository>();
 
 var app = builder.Build();
 

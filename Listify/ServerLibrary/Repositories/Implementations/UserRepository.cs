@@ -22,13 +22,15 @@ namespace ServerLibrary.Repositories.Implementations
         {
             var newUser = new User
             {
-                TelegramUserID = user.TelegramUserID
+                TelegramUserID = user.TelegramUserID,
+                ListOfContent = new ListOfContent(),
+                ListOfTags = new ListOfTags()
             };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            //user.UserID = newUser.UserID; 
+            user.UserID = newUser.UserID; 
 
             return user;
         }

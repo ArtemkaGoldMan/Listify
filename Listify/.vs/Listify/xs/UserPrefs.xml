@@ -1,36 +1,53 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Server/Controllers/ContentController.cs">
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ServerLibrary/Repositories/Implementations/UserRepository.cs">
     <Files>
-      <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" Line="138" Column="6" />
-      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="33" Column="13" />
-      <File FileName="Server/Controllers/ContentController.cs" Line="86" Column="2" />
-      <File FileName="ServerLibrary/Data/AppDbContext.cs" Line="25" Column="38" />
+      <File FileName="Server/Controllers/ContentController.cs" Line="87" Column="8" />
+      <File FileName="Server/Controllers/TagController.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/DTOs/ContentDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/DTOs/ContentTagDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/DTOs/ListOfContentDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/DTOs/ListOfTagsDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/DTOs/TagDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/DTOs/UserDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/Content.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/ContentTag.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/ListOfContent.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/ListOfTags.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/Tag.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/User.cs" Line="1" Column="1" />
+      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="58" Column="24" />
+      <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" Line="166" Column="41" />
+      <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" Line="145" Column="35" />
+      <File FileName="ServerLibrary/Repositories/Contracts/IUserRepository.cs" Line="1" Column="1" />
+      <File FileName="ServerLibrary/Repositories/Contracts/ITagRepository.cs" Line="1" Column="1" />
+      <File FileName="ServerLibrary/Repositories/Contracts/IContentRepository.cs" Line="1" Column="1" />
       <File FileName="ServerLibrary/Data/AppDbContextFactory.cs" Line="1" Column="1" />
+      <File FileName="ServerLibrary/Data/AppDbContext.cs" Line="1" Column="1" />
+      <File FileName="Server/Program.cs" Line="1" Column="1" />
+      <File FileName="Server/Controllers/WeatherForecastController.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Listify" expanded="True" selected="True">
-            <Node name="BaseLibrary">
-              <Node name="DTOs" expanded="True" />
-              <Node name="Entities" expanded="True" />
-            </Node>
             <Node name="Server">
               <Node name="Controllers" expanded="True" />
             </Node>
             <Node name="ServerLibrary">
-              <Node name="Data" expanded="True" />
+              <Node name="Repositories" expanded="True">
+                <Node name="Implementations" expanded="True" />
+              </Node>
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

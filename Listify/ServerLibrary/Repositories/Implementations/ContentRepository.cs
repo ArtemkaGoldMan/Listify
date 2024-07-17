@@ -53,7 +53,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<IEnumerable<ContentDTO>> GetContentsByUserIdAsync(int userId)
         {
-            var user = await _context.Users.Include(u => u.ListOfContent).ThenInclude(lc => lc.Contents).FirstOrDefaultAsync(u => u.UserID == userId);
+            var user = await _context.Users.Include(u => u.ListOfContent).ThenInclude(lc => lc!.Contents).FirstOrDefaultAsync(u => u.UserID == userId);
             if (user == null)
             {
                 _logger.LogWarning($"User with ID {userId} not found.");
@@ -66,7 +66,7 @@ namespace ServerLibrary.Repositories.Implementations
                 return null;
             }
 
-            var contents = user.ListOfContent.Contents.Select(c => new ContentDTO
+            var contents = user.ListOfContent.Contents!.Select(c => new ContentDTO
             {
                 ContentID = c.ContentID,
                 Name = c.Name,
@@ -80,7 +80,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<ContentDTO> GetContentByIdAsync(int userId, int contentId)
         {
-            var content = await _context.Contents.Include(c => c.ListOfContent).FirstOrDefaultAsync(c => c.ContentID == contentId && c.ListOfContent.UserID == userId);
+            var content = await _context.Contents.Include(c => c.ListOfContent).FirstOrDefaultAsync(c => c.ContentID == contentId && c.ListOfContent!.UserID == userId);
             if (content == null)
             {
                 _logger.LogWarning($"Content with ID {contentId} for user {userId} not found.");
@@ -99,7 +99,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<ContentDTO> UpdateContentAsync(int userId, int contentId, ContentDTO contentDto)
         {
-            var content = await _context.Contents.Include(c => c.ListOfContent).FirstOrDefaultAsync(c => c.ContentID == contentId && c.ListOfContent.UserID == userId);
+            var content = await _context.Contents.Include(c => c.ListOfContent).FirstOrDefaultAsync(c => c.ContentID == contentId && c.ListOfContent!.UserID == userId);
             if (content == null)
             {
                 _logger.LogWarning($"Content with ID {contentId} for user {userId} not found.");
@@ -124,7 +124,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<bool> DeleteContentAsync(int userId, int contentId)
         {
-            var content = await _context.Contents.Include(c => c.ListOfContent).FirstOrDefaultAsync(c => c.ContentID == contentId && c.ListOfContent.UserID == userId);
+            var content = await _context.Contents.Include(c => c.ListOfContent).FirstOrDefaultAsync(c => c.ContentID == contentId && c.ListOfContent!.UserID == userId);
             if (content == null)
             {
                 _logger.LogWarning($"Content with ID {contentId} for user {userId} not found.");
@@ -139,10 +139,10 @@ namespace ServerLibrary.Repositories.Implementations
         public async Task<IEnumerable<TagDTO>> GetTagsByContentIdAsync(int userId, int contentId)
         {
             var tags = await _context.ContentTags
-               .Where(ct => ct.Content.ListOfContent.UserID == userId && ct.ContentID == contentId)
+               .Where(ct => ct.Content!.ListOfContent!.UserID == userId && ct.ContentID == contentId)
                .Select(ct => new TagDTO
                {
-                   TagID = ct.Tag.TagID,
+                   TagID = ct.Tag!.TagID,
                    Name = ct.Tag.Name,
                    Description = ct.Tag.Description,
                    ListOfTagsID = ct.Tag.ListOfTagsID

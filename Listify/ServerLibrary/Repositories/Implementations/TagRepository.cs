@@ -82,7 +82,7 @@ namespace ServerLibrary.Repositories.Implementations
                 return null;
             }
 
-            var tags = user.ListOfTags.Tags.Select(t => new TagDTO
+            var tags = user.ListOfTags.Tags!.Select(t => new TagDTO
             {
                 TagID = t.TagID,
                 Name = t.Name,
@@ -95,7 +95,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<TagDTO> UpdateTagAsync(int userId, int tagId, TagDTO tagDto)
         {
-            var tag = await _context.Tags.Include(t => t.ListOfTags).FirstOrDefaultAsync(t => t.TagID == tagId && t.ListOfTags.UserID == userId);
+            var tag = await _context.Tags.Include(t => t.ListOfTags).FirstOrDefaultAsync(t => t.TagID == tagId && t.ListOfTags!.UserID == userId);
             if (tag == null)
             {
                 _logger.LogWarning($"Content with ID {tagId} for user {userId} not found.");
@@ -118,7 +118,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<bool> DeleteTagAsync(int userId, int tagId)
         {
-            var tag = await _context.Tags.Include(t => t.ListOfTags).FirstOrDefaultAsync(t => t.TagID == tagId && t.ListOfTags.UserID == userId);
+            var tag = await _context.Tags.Include(t => t.ListOfTags).FirstOrDefaultAsync(t => t.TagID == tagId && t.ListOfTags!.UserID == userId);
             if (tag == null)
             {
                 _logger.LogWarning($"Content with ID {tagId} for user {userId} not found.");
@@ -133,9 +133,9 @@ namespace ServerLibrary.Repositories.Implementations
         public async Task<bool> AddTagToContentAsync(int userId, int contentId, int tagId)
         {
             var user = await _context.Users.Include(u => u.ListOfContent)
-                                           .ThenInclude(lc => lc.Contents)
+                                           .ThenInclude(lc => lc!.Contents)
                                            .Include(u => u.ListOfTags)
-                                           .ThenInclude(lt => lt.Tags)
+                                           .ThenInclude(lt => lt!.Tags)
                                            .FirstOrDefaultAsync(u => u.UserID == userId);
 
             if (user == null)
@@ -163,7 +163,7 @@ namespace ServerLibrary.Repositories.Implementations
             var contentTag = await _context.ContentTags
                 .Include(ct => ct.Content)
                 .Include(ct => ct.Tag)
-                .Where(ct => ct.Content.ListOfContent.UserID == userId && ct.ContentID == contentId && ct.TagID == tagId)
+                .Where(ct => ct.Content!.ListOfContent!.UserID == userId && ct.ContentID == contentId && ct.TagID == tagId)
                 .FirstOrDefaultAsync();
 
             if (contentTag == null)

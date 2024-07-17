@@ -83,4 +83,12 @@ public class ContentController : ControllerBase
 
         return NoContent();
     }
+
+    // to get all tags for a specific content
+    [HttpGet("{userId}/{contentId}/tags")]
+    public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsByContentId(int userId, int contentId)
+    {
+        var tags = await _contentRepository.GetTagsByContentIdAsync(userId, contentId);
+        return Ok(tags);
+    }
 }

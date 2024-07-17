@@ -135,5 +135,21 @@ namespace ServerLibrary.Repositories.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<TagDTO>> GetTagsByContentIdAsync(int userId, int contentId)
+        {
+            var tags = await _context.ContentTags
+               .Where(ct => ct.Content.ListOfContent.UserID == userId && ct.ContentID == contentId)
+               .Select(ct => new TagDTO
+               {
+                   TagID = ct.Tag.TagID,
+                   Name = ct.Tag.Name,
+                   Description = ct.Tag.Description,
+                   ListOfTagsID = ct.Tag.ListOfTagsID
+               })
+               .ToListAsync();
+
+            return tags;
+        }
     }
 }

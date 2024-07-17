@@ -11,5 +11,9 @@ namespace ServerLibrary.Repositories.Contracts
         Task<ContentDTO> GetContentByIdAsync(int userId, int contentId);
         Task<ContentDTO> UpdateContentAsync(int userId, int contentId, ContentDTO content);
         Task<bool> DeleteContentAsync(int userId, int contentId);
+
+        //method to get all tags for a specific content
+        Task<IEnumerable<TagDTO>> GetTagsByContentIdAsync(int userId, int contentId);
     }
 }
+

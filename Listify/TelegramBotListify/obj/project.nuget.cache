@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "n2TTAZex51E=",
+  "success": true,
+  "projectFilePath": "/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/TelegramBotListify.csproj",
+  "expectedPackageFiles": [
+    "/Users/artemo/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/microsoft.extensions.configuration.binder/8.0.0/microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/microsoft.extensions.options/8.0.0/microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/microsoft.extensions.options.configurationextensions/8.0.0/microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/system.text.encodings.web/8.0.0/system.text.encodings.web.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/system.text.json/8.0.4/system.text.json.8.0.4.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/telegram.bot/21.7.1/telegram.bot.21.7.1.nupkg.sha512"
+  ],
+  "logs": []
+}

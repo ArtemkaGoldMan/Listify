@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerLibrary", "ServerLibrary\ServerLibrary.csproj", "{740ED2A6-F0A6-45C5-A305-27BDF5D15928}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBotListify", "TelegramBotListify\TelegramBotListify.csproj", "{B109D534-423A-4DC9-ACE6-C67C6B347FBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{740ED2A6-F0A6-45C5-A305-27BDF5D15928}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{740ED2A6-F0A6-45C5-A305-27BDF5D15928}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{740ED2A6-F0A6-45C5-A305-27BDF5D15928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B109D534-423A-4DC9-ACE6-C67C6B347FBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B109D534-423A-4DC9-ACE6-C67C6B347FBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B109D534-423A-4DC9-ACE6-C67C6B347FBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B109D534-423A-4DC9-ACE6-C67C6B347FBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,44 +1,38 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.TelegramBotListify FirstBuild="True" />
   <MonoDevelop.Ide.Workbench ActiveDocument="ServerLibrary/Repositories/Implementations/UserRepository.cs">
     <Files>
-      <File FileName="Server/Controllers/ContentController.cs" Line="87" Column="8" />
-      <File FileName="Server/Controllers/TagController.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/DTOs/ContentDTO.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/DTOs/ContentTagDTO.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/DTOs/ListOfContentDTO.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/DTOs/ListOfTagsDTO.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/DTOs/TagDTO.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/DTOs/UserDTO.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/Entities/Content.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/Entities/ContentTag.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/Entities/ListOfContent.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/Entities/ListOfTags.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/Entities/Tag.cs" Line="1" Column="1" />
-      <File FileName="BaseLibrary/Entities/User.cs" Line="1" Column="1" />
+      <File FileName="Server/Controllers/ContentController.cs" />
+      <File FileName="Server/Controllers/TagController.cs" />
+      <File FileName="BaseLibrary/DTOs/ContentDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ContentTagDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ListOfContentDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/ListOfTagsDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/TagDTO.cs" />
+      <File FileName="BaseLibrary/DTOs/UserDTO.cs" />
+      <File FileName="BaseLibrary/Entities/Content.cs" />
+      <File FileName="BaseLibrary/Entities/ContentTag.cs" />
+      <File FileName="BaseLibrary/Entities/ListOfContent.cs" />
+      <File FileName="BaseLibrary/Entities/ListOfTags.cs" />
+      <File FileName="BaseLibrary/Entities/Tag.cs" />
+      <File FileName="BaseLibrary/Entities/User.cs" />
       <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="58" Column="24" />
-      <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" Line="166" Column="41" />
-      <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" Line="145" Column="35" />
-      <File FileName="ServerLibrary/Repositories/Contracts/IUserRepository.cs" Line="1" Column="1" />
-      <File FileName="ServerLibrary/Repositories/Contracts/ITagRepository.cs" Line="1" Column="1" />
-      <File FileName="ServerLibrary/Repositories/Contracts/IContentRepository.cs" Line="1" Column="1" />
-      <File FileName="ServerLibrary/Data/AppDbContextFactory.cs" Line="1" Column="1" />
-      <File FileName="ServerLibrary/Data/AppDbContext.cs" Line="1" Column="1" />
-      <File FileName="Server/Program.cs" Line="1" Column="1" />
-      <File FileName="Server/Controllers/WeatherForecastController.cs" Line="1" Column="1" />
+      <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" />
+      <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" />
+      <File FileName="ServerLibrary/Repositories/Contracts/IUserRepository.cs" />
+      <File FileName="ServerLibrary/Repositories/Contracts/ITagRepository.cs" />
+      <File FileName="ServerLibrary/Repositories/Contracts/IContentRepository.cs" />
+      <File FileName="ServerLibrary/Data/AppDbContextFactory.cs" />
+      <File FileName="ServerLibrary/Data/AppDbContext.cs" />
+      <File FileName="Server/Program.cs" />
+      <File FileName="Server/Controllers/WeatherForecastController.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="Listify" expanded="True" selected="True">
-            <Node name="Server">
-              <Node name="Controllers" expanded="True" />
-            </Node>
+          <Node name="Listify">
             <Node name="ServerLibrary">
               <Node name="Repositories" expanded="True">
                 <Node name="Implementations" expanded="True" />
@@ -49,5 +43,7 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

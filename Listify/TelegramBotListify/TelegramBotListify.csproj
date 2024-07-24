@@ -10,5 +10,17 @@
 
   <ItemGroup>
     <PackageReference Include="Telegram.Bot" Version="21.7.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaseLibrary\BaseLibrary.csproj" />
+    <ProjectReference Include="..\Server\Server.csproj" />
+    <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="ServerConnection\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ServerConnection\" />
   </ItemGroup>
 </Project>

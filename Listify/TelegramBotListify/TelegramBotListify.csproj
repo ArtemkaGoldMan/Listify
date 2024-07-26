@@ -17,10 +17,4 @@
     <ProjectReference Include="..\Server\Server.csproj" />
     <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="ServerConnection\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ServerConnection\" />
-  </ItemGroup>
 </Project>

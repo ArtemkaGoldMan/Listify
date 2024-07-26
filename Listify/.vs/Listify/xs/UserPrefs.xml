@@ -1,11 +1,13 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/Program.cs">
     <Files>
-      <File FileName="ServerLibrary/Repositories/Contracts/IUserRepository.cs" Line="14" Column="1" />
-      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="36" Column="10" />
-      <File FileName="TelegramBotListify/Program.cs" Line="59" Column="13" />
+      <File FileName="ServerLibrary/Repositories/Contracts/IUserRepository.cs" Line="1" Column="1" />
+      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/Program.cs" Line="9" Column="1" />
+      <File FileName="Server/Controllers/UsersController.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -15,9 +17,8 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

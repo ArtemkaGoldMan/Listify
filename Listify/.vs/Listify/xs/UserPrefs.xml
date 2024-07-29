@@ -1,13 +1,18 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/Program.cs">
     <Files>
-      <File FileName="ServerLibrary/Repositories/Contracts/IUserRepository.cs" Line="1" Column="1" />
-      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="1" Column="1" />
-      <File FileName="TelegramBotListify/Program.cs" Line="9" Column="1" />
-      <File FileName="Server/Controllers/UsersController.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/Program.cs" Line="175" Column="1" />
+      <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" Line="33" Column="44" />
+      <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" Line="21" Column="10" />
+      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" Line="22" Column="10" />
+      <File FileName="Server/Controllers/UsersController.cs" Line="10" Column="50" />
+      <File FileName="Server/Controllers/TagController.cs" Line="1" Column="1" />
+      <File FileName="Server/Controllers/ContentController.cs" Line="21" Column="10" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -17,8 +22,6 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

@@ -66,12 +66,13 @@ public class Program
     {
         if (msg.Text == "/start")
         {
-            await bot.SendTextMessageAsync(msg.Chat, "Welcome! Pick one direction",
-                replyMarkup: new InlineKeyboardMarkup().AddButtons("Left", "Right"));
+            var startMessage = "Welcome! To start using the bot, please type /create. " +
+                               "If you have already been registered and want to stop saving your data (username and ID), " +
+                               "please type /delete.";
+            await bot.SendTextMessageAsync(msg.Chat, startMessage);
         }
         else if (msg.Text.StartsWith("/create"))
         {
-            
             var telegramUserId = msg.From.Id.ToString();
 
             var userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
@@ -87,6 +88,7 @@ public class Program
                 {
                     var createdUser = await response.Content.ReadFromJsonAsync<UserDTO>();
                     await bot.SendTextMessageAsync(msg.Chat, $"User created with ID {createdUser.UserID}");
+                    await ShowMainMenu(bot, msg.Chat.Id);
                 }
                 else
                 {
@@ -96,19 +98,17 @@ public class Program
             else
             {
                 await bot.SendTextMessageAsync(msg.Chat, "User has already been created.");
+                await ShowMainMenu(bot, msg.Chat.Id);
             }
         }
         else if (msg.Text.StartsWith("/delete"))
         {
-
             var telegramUserId = msg.From.Id.ToString();
-            //find user by telegram id
             var userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
             if (userResponse.IsSuccessStatusCode)
             {
                 var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
 
-                // If user is found, delete the user
                 var deleteResponse = await httpClient.DeleteAsync($"api/Users/{user.UserID}");
                 if (deleteResponse.IsSuccessStatusCode)
                 {
@@ -124,7 +124,30 @@ public class Program
                 await bot.SendTextMessageAsync(msg.Chat, "User not found.");
             }
         }
+        else if (msg.Text == "Content")
+        {
+            await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
+            await bot.SendTextMessageAsync(msg.Chat, "Content menu.",
+               replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Content", "Delete Content"));
+        }
+        else if (msg.Text == "Tags")
+        {
+            await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
+            await bot.SendTextMessageAsync(msg.Chat, "Tag menu",
+               replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Tag", "Delete Tag"));
+        }
+        else if (msg.Text == "List")
+        {
+            await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
+            await bot.SendTextMessageAsync(msg.Chat, "List menu",
+               replyMarkup: new InlineKeyboardMarkup().AddButtons("Show", "Right"));
+        }
+        else if (msg.Text == "Back")
+        {
+            await ShowMainMenu(bot, msg.Chat.Id);
+        }
     }
+
 
     private static async Task OnUpdate(TelegramBotClient bot, Update update)
     {
@@ -134,4 +157,33 @@ public class Program
             await bot.SendTextMessageAsync(query.Message!.Chat, $"User {query.From} clicked on {query.Data}");
         }
     }
+
+
+    private static async Task ShowMainMenu(TelegramBotClient bot, long chatId)
+    {
+        var mainMenuKeyboard = new ReplyKeyboardMarkup(new[]
+        {
+        new KeyboardButton[] { "Content", "Tags" },
+        new KeyboardButton[] { "List" }
+    })
+        {
+            ResizeKeyboard = true
+        };
+
+        await bot.SendTextMessageAsync(chatId, "Choose an option:", replyMarkup: mainMenuKeyboard);
+    }
+
+    private static async Task ShowSubMenu(TelegramBotClient bot, long chatId, string menuName)
+    {
+        var submenuKeyboard = new ReplyKeyboardMarkup(new[]
+        {
+        new KeyboardButton[] { "Back" }
+    })
+        {
+            ResizeKeyboard = true
+        };
+
+        await bot.SendTextMessageAsync(chatId, $"You are in the {menuName} menu. Press 'Back' to return to the main menu.", replyMarkup: submenuKeyboard);
+    }
+
 }

@@ -17,4 +17,10 @@
     <ProjectReference Include="..\Server\Server.csproj" />
     <ProjectReference Include="..\ServerLibrary\ServerLibrary.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>

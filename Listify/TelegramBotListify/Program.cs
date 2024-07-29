@@ -21,7 +21,7 @@ public class Program
         var configuration = builder.Build();
 
         string botToken = configuration["TelegramBotToken"];
-        string apiBaseUrl = "http://localhost:5038"; 
+        string apiBaseUrl = "http://localhost:5038";
 
         if (string.IsNullOrEmpty(botToken))
         {
@@ -64,90 +64,91 @@ public class Program
 
     private static async Task OnMessage(TelegramBotClient bot, Message msg)
     {
-        if (msg.Text == "/start")
+        switch (msg.Text)
         {
-            var startMessage = "Welcome! To start using the bot, please type /create. " +
-                               "If you have already been registered and want to stop saving your data (username and ID), " +
-                               "please type /delete.";
-            await bot.SendTextMessageAsync(msg.Chat, startMessage);
-        }
-        else if (msg.Text.StartsWith("/create"))
-        {
-            var telegramUserId = msg.From.Id.ToString();
+            case "/start":
+                var startMessage = "Welcome! To start using the bot, please type /create. " +
+                                   "If you have already been registered and want to stop saving your data (username and ID), " +
+                                   "please type /delete.";
+                await bot.SendTextMessageAsync(msg.Chat, startMessage);
+                break;
 
-            var userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
-            if (!userResponse.IsSuccessStatusCode)
-            {
-                var userDto = new UserDTO
-                {
-                    TelegramUserID = telegramUserId
-                };
+            case "/create":
+                var telegramUserId = msg.From.Id.ToString();
 
-                var response = await httpClient.PostAsJsonAsync("api/Users/CreateUser", userDto);
-                if (response.IsSuccessStatusCode)
+                var userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
+                if (!userResponse.IsSuccessStatusCode)
                 {
-                    var createdUser = await response.Content.ReadFromJsonAsync<UserDTO>();
-                    await bot.SendTextMessageAsync(msg.Chat, $"User created with ID {createdUser.UserID}");
+                    var userDto = new UserDTO { TelegramUserID = telegramUserId };
+                    var response = await httpClient.PostAsJsonAsync("api/Users/CreateUser", userDto);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var createdUser = await response.Content.ReadFromJsonAsync<UserDTO>();
+                        await bot.SendTextMessageAsync(msg.Chat, $"User created with ID {createdUser.UserID}");
+                        await ShowMainMenu(bot, msg.Chat.Id);
+                    }
+                    else
+                    {
+                        await bot.SendTextMessageAsync(msg.Chat, "Failed to create user.");
+                    }
+                }
+                else
+                {
+                    await bot.SendTextMessageAsync(msg.Chat, "User has already been created.");
                     await ShowMainMenu(bot, msg.Chat.Id);
                 }
-                else
-                {
-                    await bot.SendTextMessageAsync(msg.Chat, "Failed to create user.");
-                }
-            }
-            else
-            {
-                await bot.SendTextMessageAsync(msg.Chat, "User has already been created.");
-                await ShowMainMenu(bot, msg.Chat.Id);
-            }
-        }
-        else if (msg.Text.StartsWith("/delete"))
-        {
-            var telegramUserId = msg.From.Id.ToString();
-            var userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
-            if (userResponse.IsSuccessStatusCode)
-            {
-                var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
+                break;
 
-                var deleteResponse = await httpClient.DeleteAsync($"api/Users/{user.UserID}");
-                if (deleteResponse.IsSuccessStatusCode)
+            case "/delete":
+                telegramUserId = msg.From.Id.ToString();
+
+                userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
+                if (userResponse.IsSuccessStatusCode)
                 {
-                    await bot.SendTextMessageAsync(msg.Chat, $"User with ID {user.UserID} has been deleted.");
+                    var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
+                    var deleteResponse = await httpClient.DeleteAsync($"api/Users/{user.UserID}");
+                    if (deleteResponse.IsSuccessStatusCode)
+                    {
+                        await bot.SendTextMessageAsync(msg.Chat, $"User with ID {user.UserID} has been deleted.");
+                    }
+                    else
+                    {
+                        await bot.SendTextMessageAsync(msg.Chat, "Failed to delete user.");
+                    }
                 }
                 else
                 {
-                    await bot.SendTextMessageAsync(msg.Chat, "Failed to delete user.");
+                    await bot.SendTextMessageAsync(msg.Chat, "User not found.");
                 }
-            }
-            else
-            {
-                await bot.SendTextMessageAsync(msg.Chat, "User not found.");
-            }
-        }
-        else if (msg.Text == "Content")
-        {
-            await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
-            await bot.SendTextMessageAsync(msg.Chat, "Content menu.",
-               replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Content", "Delete Content"));
-        }
-        else if (msg.Text == "Tags")
-        {
-            await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
-            await bot.SendTextMessageAsync(msg.Chat, "Tag menu",
-               replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Tag", "Delete Tag"));
-        }
-        else if (msg.Text == "List")
-        {
-            await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
-            await bot.SendTextMessageAsync(msg.Chat, "List menu",
-               replyMarkup: new InlineKeyboardMarkup().AddButtons("Show", "Right"));
-        }
-        else if (msg.Text == "Back")
-        {
-            await ShowMainMenu(bot, msg.Chat.Id);
+                break;
+
+            case "Content":
+                await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
+                await bot.SendTextMessageAsync(msg.Chat, "Content menu.",
+                    replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Content", "Delete Content"));
+                break;
+
+            case "Tags":
+                await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
+                await bot.SendTextMessageAsync(msg.Chat, "Tag menu",
+                    replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Tag", "Delete Tag"));
+                break;
+
+            case "List":
+                await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
+                await bot.SendTextMessageAsync(msg.Chat, "List menu",
+                    replyMarkup: new InlineKeyboardMarkup().AddButtons("Show", "Right"));
+                break;
+
+            case "Back":
+                await ShowMainMenu(bot, msg.Chat.Id);
+                break;
+
+            default:
+                await bot.SendTextMessageAsync(msg.Chat, "Do not do that");
+                break;
         }
     }
-
 
     private static async Task OnUpdate(TelegramBotClient bot, Update update)
     {
@@ -157,7 +158,6 @@ public class Program
             await bot.SendTextMessageAsync(query.Message!.Chat, $"User {query.From} clicked on {query.Data}");
         }
     }
-
 
     private static async Task ShowMainMenu(TelegramBotClient bot, long chatId)
     {
@@ -185,5 +185,4 @@ public class Program
 
         await bot.SendTextMessageAsync(chatId, $"You are in the {menuName} menu. Press 'Back' to return to the main menu.", replyMarkup: submenuKeyboard);
     }
-
 }

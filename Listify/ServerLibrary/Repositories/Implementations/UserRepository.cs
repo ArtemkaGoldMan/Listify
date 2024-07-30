@@ -30,10 +30,11 @@ namespace ServerLibrary.Repositories.Implementations
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            user.UserID = newUser.UserID; 
+            user.UserID = newUser.UserID;
 
             return user;
         }
+
 
         public async Task<bool> DeleteUserAsync(int userId)
         {

@@ -31,6 +31,7 @@ namespace Server.Controllers
             return CreatedAtAction(nameof(GetUserById), new { userId = createdUser.UserID }, createdUser);
         }
 
+
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {

@@ -50,7 +50,6 @@ public class Program
         var commands = new List<BotCommand>
         {
             new BotCommand { Command = "start", Description = "Start the bot" },
-            new BotCommand { Command = "create", Description = "Register a new user" },
             new BotCommand { Command = "delete", Description = "Delete your user" }
         };
 
@@ -67,13 +66,6 @@ public class Program
         switch (msg.Text)
         {
             case "/start":
-                var startMessage = "Welcome! To start using the bot, please type /create. " +
-                                   "If you have already been registered and want to stop saving your data (username and ID), " +
-                                   "please type /delete.";
-                await bot.SendTextMessageAsync(msg.Chat, startMessage);
-                break;
-
-            case "/create":
                 var telegramUserId = msg.From.Id.ToString();
 
                 var userResponse = await httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
@@ -85,6 +77,7 @@ public class Program
                     {
                         var createdUser = await response.Content.ReadFromJsonAsync<UserDTO>();
                         await bot.SendTextMessageAsync(msg.Chat, $"User created with ID {createdUser.UserID}");
+
                         await ShowMainMenu(bot, msg.Chat.Id);
                     }
                     else
@@ -95,6 +88,7 @@ public class Program
                 else
                 {
                     await bot.SendTextMessageAsync(msg.Chat, "User has already been created.");
+
                     await ShowMainMenu(bot, msg.Chat.Id);
                 }
                 break;
@@ -122,28 +116,6 @@ public class Program
                 }
                 break;
 
-            case "Content":
-                await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
-                await bot.SendTextMessageAsync(msg.Chat, "Content menu.",
-                    replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Content", "Delete Content"));
-                break;
-
-            case "Tags":
-                await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
-                await bot.SendTextMessageAsync(msg.Chat, "Tag menu",
-                    replyMarkup: new InlineKeyboardMarkup().AddButtons("Add Tag", "Delete Tag"));
-                break;
-
-            case "List":
-                await ShowSubMenu(bot, msg.Chat.Id, msg.Text);
-                await bot.SendTextMessageAsync(msg.Chat, "List menu",
-                    replyMarkup: new InlineKeyboardMarkup().AddButtons("Show", "Right"));
-                break;
-
-            case "Back":
-                await ShowMainMenu(bot, msg.Chat.Id);
-                break;
-
             default:
                 await bot.SendTextMessageAsync(msg.Chat, "Do not do that");
                 break;
@@ -159,18 +131,29 @@ public class Program
         }
     }
 
+    //private static async Task ShowMainMenuOLD(TelegramBotClient bot, long chatId)
+    //{
+    //    var mainMenuKeyboard = new ReplyKeyboardMarkup(new[]
+    //    {
+    //    new KeyboardButton[] { "Content", "Tags" },
+    //    new KeyboardButton[] { "List" }
+    //    })
+    //    {
+    //        ResizeKeyboard = true
+    //    };
+
+    //    await bot.SendTextMessageAsync(chatId, "Choose an option:", replyMarkup: mainMenuKeyboard);
+    //}
+
     private static async Task ShowMainMenu(TelegramBotClient bot, long chatId)
     {
-        var mainMenuKeyboard = new ReplyKeyboardMarkup(new[]
-        {
-        new KeyboardButton[] { "Content", "Tags" },
-        new KeyboardButton[] { "List" }
-    })
-        {
-            ResizeKeyboard = true
-        };
+        var inlineKeyboard = new InlineKeyboardMarkup(new[]
+                {
+                    new[] { InlineKeyboardButton.WithCallbackData("Content Menu"), InlineKeyboardButton.WithCallbackData("Tag Menu") },
+                    new[] { InlineKeyboardButton.WithCallbackData("List Menu")}
+                });
 
-        await bot.SendTextMessageAsync(chatId, "Choose an option:", replyMarkup: mainMenuKeyboard);
+        await bot.SendTextMessageAsync(chatId, "Main Menu", replyMarkup: inlineKeyboard);
     }
 
     private static async Task ShowSubMenu(TelegramBotClient bot, long chatId, string menuName)
@@ -178,7 +161,7 @@ public class Program
         var submenuKeyboard = new ReplyKeyboardMarkup(new[]
         {
         new KeyboardButton[] { "Back" }
-    })
+        })
         {
             ResizeKeyboard = true
         };

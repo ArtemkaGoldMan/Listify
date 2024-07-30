@@ -49,8 +49,8 @@ public class Program
     {
         var commands = new List<BotCommand>
         {
-            new BotCommand { Command = "start", Description = "Start the bot" },
-            new BotCommand { Command = "delete", Description = "Delete your user" }
+            new BotCommand { Command = "start", Description = "Start the bot and register it at the same time" },
+            new BotCommand { Command = "delete", Description = "Delete your user from db" }
         };
 
         await bot.SetMyCommandsAsync(commands);
@@ -126,46 +126,85 @@ public class Program
     {
         if (update is { CallbackQuery: { } query })
         {
-            await bot.AnswerCallbackQueryAsync(query.Id, $"You picked {query.Data}");
-            await bot.SendTextMessageAsync(query.Message!.Chat, $"User {query.From} clicked on {query.Data}");
+            // Delete the previous message
+            await bot.DeleteMessageAsync(query.Message.Chat.Id, query.Message.MessageId);
+
+            switch (query.Data)
+            {
+                case "Content Menu":
+                    await ShowContentMenu(bot, query.Message.Chat.Id);
+                    break;
+
+                case "Tag Menu":
+                    await ShowTagMenu(bot, query.Message.Chat.Id);
+                    break;
+
+                case "List Menu":
+                    await ShowListMenu(bot, query.Message.Chat.Id);
+                    break;
+
+                case "Back to Main Menu":
+                    await ShowMainMenu(bot, query.Message.Chat.Id);
+                    break;
+
+                default:
+                    await bot.AnswerCallbackQueryAsync(query.Id, $"Unknown command: {query.Data}");
+                    break;
+            }
         }
     }
 
-    //private static async Task ShowMainMenuOLD(TelegramBotClient bot, long chatId)
-    //{
-    //    var mainMenuKeyboard = new ReplyKeyboardMarkup(new[]
-    //    {
-    //    new KeyboardButton[] { "Content", "Tags" },
-    //    new KeyboardButton[] { "List" }
-    //    })
-    //    {
-    //        ResizeKeyboard = true
-    //    };
-
-    //    await bot.SendTextMessageAsync(chatId, "Choose an option:", replyMarkup: mainMenuKeyboard);
-    //}
-
+    //Main menu from bot start
     private static async Task ShowMainMenu(TelegramBotClient bot, long chatId)
     {
         var inlineKeyboard = new InlineKeyboardMarkup(new[]
-                {
-                    new[] { InlineKeyboardButton.WithCallbackData("Content Menu"), InlineKeyboardButton.WithCallbackData("Tag Menu") },
-                    new[] { InlineKeyboardButton.WithCallbackData("List Menu")}
-                });
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Content Menu"), InlineKeyboardButton.WithCallbackData("Tag Menu") },
+            new[] { InlineKeyboardButton.WithCallbackData("List Menu") }
+        });
 
         await bot.SendTextMessageAsync(chatId, "Main Menu", replyMarkup: inlineKeyboard);
     }
 
-    private static async Task ShowSubMenu(TelegramBotClient bot, long chatId, string menuName)
+    //Menu for contents with content managing
+    private static async Task ShowContentMenu(TelegramBotClient bot, long chatId)
     {
-        var submenuKeyboard = new ReplyKeyboardMarkup(new[]
+        var submenuKeyboard = new InlineKeyboardMarkup(new[]
         {
-        new KeyboardButton[] { "Back" }
-        })
-        {
-            ResizeKeyboard = true
-        };
+            new[] { InlineKeyboardButton.WithCallbackData("Show Contents"), InlineKeyboardButton.WithCallbackData("Add Content") },
+            new[] { InlineKeyboardButton.WithCallbackData("Update Content"), InlineKeyboardButton.WithCallbackData("Delete Content") },
+            new[] { InlineKeyboardButton.WithCallbackData("Connect Tag with Content"), InlineKeyboardButton.WithCallbackData("Remove Tag from Content") },
+            new[] { InlineKeyboardButton.WithCallbackData("Back to Main Menu") }
+        });
 
-        await bot.SendTextMessageAsync(chatId, $"You are in the {menuName} menu. Press 'Back' to return to the main menu.", replyMarkup: submenuKeyboard);
+        await bot.SendTextMessageAsync(chatId, "You are in the Content Menu. Choose an option or go back to the main menu.", replyMarkup: submenuKeyboard);
+    }
+
+    //Menu for tags with tag managing
+    private static async Task ShowTagMenu(TelegramBotClient bot, long chatId)
+    {
+        var submenuKeyboard = new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Show tags") },
+            new[] { InlineKeyboardButton.WithCallbackData("Add Tag"), InlineKeyboardButton.WithCallbackData("Delete Tag") },
+            new[] { InlineKeyboardButton.WithCallbackData("Update tag") },
+            new[] { InlineKeyboardButton.WithCallbackData("Back to Main Menu") }
+
+        });
+
+        await bot.SendTextMessageAsync(chatId, "You are in the Tag Menu. Choose an option or go back to the main menu.", replyMarkup: submenuKeyboard);
+    }
+
+    //Menu for Showing and filtering List
+    private static async Task ShowListMenu(TelegramBotClient bot, long chatId)
+    {
+        var submenuKeyboard = new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Show all Contents") },
+            new[] { InlineKeyboardButton.WithCallbackData("Show with filter") },
+            new[] { InlineKeyboardButton.WithCallbackData("Back to Main Menu") }
+        });
+
+        await bot.SendTextMessageAsync(chatId, "You are in the List Menu. Choose an option or go back to the main menu.", replyMarkup: submenuKeyboard);
     }
 }

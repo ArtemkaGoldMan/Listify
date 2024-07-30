@@ -1,12 +1,17 @@
 # User Secrets directory
 **/secrets.json
 
+# All dtos
 dtos.txt
 
+# All entities
 entities.txt
 
+# Some notes about my db and date in that
 my_db.txt
 
+# Pepa Pig
 ca.pem
 
+# for my db
 ask_my_db.sql

@@ -1,6 +1,8 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ServerLibrary/Repositories/Contracts/IContentRepository.cs">
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/Program.cs">
     <Files>
       <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" />
       <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" />
@@ -12,27 +14,26 @@
       <File FileName="BaseLibrary/DTOs/UserDTO.cs" />
       <File FileName="ServerLibrary/Repositories/Contracts/ITagRepository.cs" />
       <File FileName="ServerLibrary/Repositories/Contracts/IContentRepository.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/Program.cs" Line="137" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="Listify" expanded="True">
-            <Node name="ServerLibrary" expanded="True">
+          <Node name="Listify">
+            <Node name="ServerLibrary">
               <Node name="Repositories" expanded="True">
-                <Node name="Contracts" expanded="True">
-                  <Node name="IContentRepository.cs" selected="True" />
-                </Node>
+                <Node name="Contracts" expanded="True" />
+                <Node name="Implementations" expanded="True" />
               </Node>
             </Node>
+            <Node name="TelegramBotListify" selected="True" />
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

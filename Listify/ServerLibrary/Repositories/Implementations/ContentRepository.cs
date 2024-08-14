@@ -151,5 +151,24 @@ namespace ServerLibrary.Repositories.Implementations
 
             return tags;
         }
+
+        public async Task<IEnumerable<ContentDTO>> GetContentsByUserIdAndTagListAsync(int userId, IEnumerable<int> tagIds)
+        {
+            // Fetch contents associated with the specified tags for the given user
+            var contents = await _context.ContentTags
+                .Where(ct => ct.Content.ListOfContent.UserID == userId && tagIds.Contains(ct.TagID))
+                .GroupBy(ct => ct.Content)
+                .Select(g => new ContentDTO
+                {
+                    ContentID = g.Key.ContentID,
+                    Name = g.Key.Name,
+                    Description = g.Key.Description,
+                    ImageUrl = g.Key.ImageUrl,
+                    ListOfContentID = g.Key.ListOfContentID
+                })
+                .ToListAsync();
+
+            return contents;
+        }
     }
 }

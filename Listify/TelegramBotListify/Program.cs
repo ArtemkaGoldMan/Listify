@@ -10,6 +10,7 @@ public class Program
 {
     private static readonly HttpClient httpClient = new HttpClient();
     private static readonly ConcurrentDictionary<long, string> userStates = new ConcurrentDictionary<long, string>();
+    private static readonly ConcurrentDictionary<long, HashSet<int>> userTagSelections = new ConcurrentDictionary<long, HashSet<int>>();
 
     public static async Task Main(string[] args)
     {
@@ -30,7 +31,7 @@ public class Program
         var bot = new TelegramBotClient(botToken, cancellationToken: cts.Token);
         var me = await bot.GetMeAsync();
 
-        var botHandler = new BotHandler(bot, httpClient, userStates);
+        var botHandler = new BotHandler(bot, httpClient, userStates, userTagSelections);
 
         await botHandler.SetBotCommands(); // Set the commands for the bot
 

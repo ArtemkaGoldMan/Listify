@@ -11,16 +11,17 @@ public class BotHandler
     private readonly TelegramBotClient _bot;
     private readonly HttpClient _httpClient;
     private readonly ConcurrentDictionary<long, string> _userStates;
+    private readonly ConcurrentDictionary<long, HashSet<int>> _userTagSelections;
     private readonly ContentManager _contentManager;
     private readonly TagManager _tagManager;
     private readonly UserManager _userManager;
 
-    public BotHandler(TelegramBotClient bot, HttpClient httpClient, ConcurrentDictionary<long, string> userStates)
+    public BotHandler(TelegramBotClient bot, HttpClient httpClient, ConcurrentDictionary<long, string> userStates, ConcurrentDictionary<long, HashSet<int>> userTagSelections)
     {
         _bot = bot;
         _httpClient = httpClient;
         _userStates = userStates;
-        _contentManager = new ContentManager(bot, httpClient, userStates);
+        _contentManager = new ContentManager(bot, httpClient, userStates, userTagSelections);
         _tagManager = new TagManager(bot, httpClient, userStates);
         _userManager = new UserManager(bot, httpClient, userStates);
     }
@@ -156,6 +157,18 @@ public class BotHandler
                 case "Show with filter":
                     await _contentManager.ShowContentsToList(query.Message.Chat.Id, query.From.Id.ToString());
                     break;
+
+                // Handle tag selection
+                case "countTag":
+                    var tagIdToCount = int.Parse(callbackData[1]);
+                    await _contentManager.HandleTagSelection(query.Message.Chat.Id, query.From.Id.ToString(), tagIdToCount, true);
+                    break;
+
+                case "uncountTag":
+                    var tagIdToUncount = int.Parse(callbackData[1]);
+                    await _contentManager.HandleTagSelection(query.Message.Chat.Id, query.From.Id.ToString(), tagIdToUncount, false);
+                    break;
+
 
                 default:
                     await _bot.AnswerCallbackQueryAsync(query.Id, $"Unknown command: {query.Data}");

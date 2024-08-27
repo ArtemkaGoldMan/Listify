@@ -12,20 +12,23 @@ public class ContentManager
     private readonly TelegramBotClient _bot;
     private readonly HttpClient _httpClient;
     private readonly ConcurrentDictionary<long, string> _userStates;
+    private readonly ConcurrentDictionary<long, HashSet<int>> _userTagSelections; // Track selected tags for each user
 
 
-    private static InlineKeyboardMarkup contentSubmenuKeyboard = new InlineKeyboardMarkup(new[]
+
+    private static InlineKeyboardMarkup contentMenuKeyboard = new InlineKeyboardMarkup(new[]
         {
             new[] { InlineKeyboardButton.WithCallbackData("Show Contents"), InlineKeyboardButton.WithCallbackData("Show with filter") },
             new[] { InlineKeyboardButton.WithCallbackData("Add Content"), InlineKeyboardButton.WithCallbackData("Delete Content") },
             new[] { InlineKeyboardButton.WithCallbackData("Main Menu") }
         });
 
-    public ContentManager(TelegramBotClient bot, HttpClient httpClient, ConcurrentDictionary<long, string> userStates)
+    public ContentManager(TelegramBotClient bot, HttpClient httpClient, ConcurrentDictionary<long, string> userStates, ConcurrentDictionary<long, HashSet<int>> userTagSelections)
     {
         _bot = bot;
         _httpClient = httpClient;
         _userStates = userStates;
+        _userTagSelections = userTagSelections;
     }
 
     /// <summary>
@@ -35,7 +38,7 @@ public class ContentManager
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
     public async Task ShowContentMenu(long chatId)
     {
-        await _bot.SendTextMessageAsync(chatId, "You are in the Content Menu. Choose an option or go back to the main menu.", replyMarkup: contentSubmenuKeyboard);
+        await _bot.SendTextMessageAsync(chatId, "You are in the Content Menu. Choose an option or go back to the main menu.", replyMarkup: contentMenuKeyboard);
     }
 
     /// <summary>
@@ -119,12 +122,9 @@ public class ContentManager
 
     /// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ///
 
-
-
-
     public async Task ShowContentsToList(long chatId, string telegramUserId)
     {
-        // Retrieve the user information
+        // Retrieve user information
         var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
         if (!userResponse.IsSuccessStatusCode)
         {
@@ -139,39 +139,84 @@ public class ContentManager
             return;
         }
 
-        // Retrieve the content information
-        var contentsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}");
+        // Retrieve tags
+        var tagsResponse = await _httpClient.GetAsync($"api/Tag/{user.UserID}");
+        if (!tagsResponse.IsSuccessStatusCode)
+        {
+            await _bot.SendTextMessageAsync(chatId, "Failed to retrieve tags.");
+            return;
+        }
+
+        var tags = await tagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
+
+        // Initialize or get user's selected tags
+        var selectedTags = _userTagSelections.GetOrAdd(chatId, _ => new HashSet<int>());
+
+        // Retrieve contents based on selected tags
+        var contentsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}/contentsByTags?{string.Join("&", selectedTags.Select(t => $"tagIds={t}"))}");
         if (!contentsResponse.IsSuccessStatusCode)
         {
             await _bot.SendTextMessageAsync(chatId, "Failed to retrieve contents.");
             return;
         }
 
-        // Define the "Content Menu" button
-        var contentMenuButton = new InlineKeyboardMarkup(new[]
-        {
-        InlineKeyboardButton.WithCallbackData("Content Menu")
-    });
-
         var contents = await contentsResponse.Content.ReadFromJsonAsync<IEnumerable<ContentDTO>>();
-        if (contents == null || !contents.Any())
-        {
-            await _bot.SendTextMessageAsync(chatId, "No contents found.", replyMarkup: contentMenuButton);
-        }
 
-        // Create a message containing all the content details
+        // Create message with contents
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine("Here are your contents:");
 
-        foreach (var content in contents)
+        if (contents != null && contents.Any())
         {
-            messageBuilder.AppendLine($"- {content.Name} (ID: {content.ContentID})");
+            foreach (var content in contents)
+            {
+                messageBuilder.AppendLine($"- {content.Name} (ID: {content.ContentID})");
+            }
+        }
+        else
+        {
+            messageBuilder.AppendLine("No contents found for the selected tags.");
         }
 
+        // Create tag buttons
+        var inlineButtons = tags.Select(tag =>
+        {
+            bool isSelected = selectedTags.Contains(tag.TagID);
+            string buttonText = isSelected ? $"{tag.Name} ✅" : tag.Name;
+            string callbackData = isSelected ? $"uncountTag:{tag.TagID}" : $"countTag:{tag.TagID}";
 
-        // Send the message with the "Content Menu" button
-        await _bot.SendTextMessageAsync(chatId, messageBuilder.ToString(), replyMarkup: contentMenuButton);
+            return new[] { InlineKeyboardButton.WithCallbackData(buttonText, callbackData) };
+        }).ToList();
+
+        // Add "Content Menu" button
+        inlineButtons.Add(new[]
+        {
+            InlineKeyboardButton.WithCallbackData("Content Menu")
+        });
+
+        var tagKeyboard = new InlineKeyboardMarkup(inlineButtons);
+
+        // Send the message with the "Content Menu" button and tag keyboard
+        await _bot.SendTextMessageAsync(chatId, messageBuilder.ToString(), replyMarkup: tagKeyboard);
     }
+
+    public async Task HandleTagSelection(long chatId, string telegramUserId, int tagId, bool isAdding)
+    {
+        var selectedTags = _userTagSelections.GetOrAdd(chatId, _ => new HashSet<int>());
+
+        if (isAdding)
+        {
+            selectedTags.Add(tagId);
+        }
+        else
+        {
+            selectedTags.Remove(tagId);
+        }
+
+        // Fetch and display contents based on updated tag selection
+        await ShowContentsToList(chatId, telegramUserId);
+    }
+
 
 
     /// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ///

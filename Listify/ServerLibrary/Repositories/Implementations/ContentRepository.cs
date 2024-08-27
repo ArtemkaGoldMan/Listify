@@ -157,7 +157,8 @@ namespace ServerLibrary.Repositories.Implementations
             // Fetch contents associated with the specified tags for the given user
             var contents = await _context.ContentTags
                 .Where(ct => ct.Content.ListOfContent.UserID == userId && tagIds.Contains(ct.TagID))
-                .GroupBy(ct => ct.Content)
+                .GroupBy(ct => new { ct.Content.ContentID, ct.Content.Name, ct.Content.Description, ct.Content.ImageUrl, ct.Content.ListOfContentID })
+                .Where(g => g.Select(ct => ct.TagID).Distinct().Count() == tagIds.Count())
                 .Select(g => new ContentDTO
                 {
                     ContentID = g.Key.ContentID,
@@ -170,5 +171,6 @@ namespace ServerLibrary.Repositories.Implementations
 
             return contents;
         }
+
     }
 }

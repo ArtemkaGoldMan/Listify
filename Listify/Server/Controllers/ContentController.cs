@@ -92,23 +92,28 @@ public class ContentController : ControllerBase
         return Ok(tags);
     }
 
-    // ContentController.cs
 
     [HttpGet("{userId}/contentsByTags")]
     public async Task<IActionResult> GetContentsByUserIdAndTagList(int userId, [FromQuery] IEnumerable<int> tagIds)
     {
         if (tagIds == null || !tagIds.Any())
         {
-            return BadRequest("Tag IDs must be provided.");
+            var userContents = await _contentRepository.GetContentsByUserIdAsync(userId);
+            if (userContents == null)
+            {
+                return NotFound($"User with ID {userId} not found.");
+            }
+
+            return Ok(userContents);
         }
 
-        var contents = await _contentRepository.GetContentsByUserIdAndTagListAsync(userId, tagIds);
-        if (contents == null || !contents.Any())
+        var filteredContents = await _contentRepository.GetContentsByUserIdAndTagListAsync(userId, tagIds);
+        if (filteredContents == null || !filteredContents.Any())
         {
             return NotFound($"No contents found for user {userId} with the specified tags.");
         }
 
-        return Ok(contents);
+        return Ok(filteredContents);
     }
 
 }

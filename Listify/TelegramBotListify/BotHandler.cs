@@ -84,6 +84,7 @@ public class BotHandler
 
             switch (action)
             {
+                //--------------------------Menus----------------
                 case "Content Menu":
                     await _contentManager.ShowContentMenu(query.Message.Chat.Id);
                     break;
@@ -92,11 +93,27 @@ public class BotHandler
                     await _tagManager.ShowTagMenu(query.Message.Chat.Id, query.From.Id.ToString());
                     break;
 
+                case "Main Menu":
+                    await _userManager.ShowMainMenu(query.Message.Chat.Id);
+                    break;
+
+                //--------------------------TAGS----------------
+                case "Create Tag":
+                    await _tagManager.HandleCreateTag(query.Message.Chat.Id);
+                    break;
+
+                case "Delete Tag":
+                    var tagId = int.Parse(callbackData[1]);
+                    await _tagManager.HandleDeleteTag(query.Message.Chat.Id, query.From.Id.ToString(), tagId);
+                    break;
+
+                //--------------------------Contants----------------
+
                 case "Show Contents":
                     await _contentManager.ShowContents(query.Message.Chat.Id, query.From.Id.ToString());
                     break;
 
-                case "content":
+                case "One Content Managing":
                     var contentId = int.Parse(callbackData[1]);
                     await _contentManager.HandleContentOptions(query.Message.Chat.Id, query.From.Id.ToString(), contentId);
                     break;
@@ -105,20 +122,11 @@ public class BotHandler
                     await _contentManager.AddContent(query.Message.Chat.Id);
                     break;
 
-                case "Create Tag":
-                    await _tagManager.HandleCreateTag(query.Message.Chat.Id);
-                    break;
-
-                case "deleteTag":
-                    var tagId = int.Parse(callbackData[1]);
-                    await _tagManager.HandleDeleteTag(query.Message.Chat.Id, query.From.Id.ToString(), tagId);
-                    break;
-
                 case "Delete Content":
                     await _contentManager.ShowContentsForDeletion(query.Message.Chat.Id, query.From.Id.ToString());
                     break;
 
-                case "delete":
+                case "deleteContent":
                     contentId = int.Parse(callbackData[1]);
                     await _contentManager.HandleDeleteContent(query.Message.Chat.Id, query.From.Id.ToString(), contentId);
                     break;
@@ -144,13 +152,9 @@ public class BotHandler
                     tagId = int.Parse(callbackData[2]);
                     await _contentManager.RemoveTagFromContent(query.Message.Chat.Id, query.From.Id.ToString(), contentId, tagId);
                     break;
-
-                case "Back to Content Menu":
-                    await _contentManager.ShowContentMenu(query.Message.Chat.Id);
-                    break;
-
-                case "Back to Main Menu":
-                    await _userManager.ShowMainMenu(query.Message.Chat.Id);
+                ////////////////
+                case "Show with filter":
+                    await _contentManager.ShowContentsToList(query.Message.Chat.Id, query.From.Id.ToString());
                     break;
 
                 default:

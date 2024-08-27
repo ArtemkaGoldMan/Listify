@@ -1,27 +1,28 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/BotHandler.cs">
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Server/Controllers/TagController.cs">
     <Files>
-      <File FileName="TelegramBotListify/Program.cs" Line="22" Column="44" />
-      <File FileName="Server/Controllers/TagController.cs" Line="48" Column="35" />
-      <File FileName="TelegramBotListify/BotHandler.cs" Line="78" Column="1" />
-      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="290" Column="6" />
-      <File FileName="TelegramBotListify/Services/TagManager.cs" Line="26" Column="10" />
-      <File FileName="TelegramBotListify/Services/UserManager.cs" />
-      <File FileName="Server/Controllers/ContentController.cs" Line="70" Column="10" />
+      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="137" Column="6" />
+      <File FileName="TelegramBotListify/BotHandler.cs" Line="157" Column="61" />
+      <File FileName="Server/Controllers/ContentController.cs" Line="107" Column="1" />
+      <File FileName="TelegramBotListify/Services/UserManager.cs" Line="1" Column="1" />
+      <File FileName="Server/Controllers/TagController.cs" Line="16" Column="10" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Listify" expanded="True">
-            <Node name="BaseLibrary" expanded="True">
-              <Node name="DTOs" expanded="True" />
-            </Node>
             <Node name="Server" expanded="True">
-              <Node name="Controllers" expanded="True" />
+              <Node name="Controllers" expanded="True">
+                <Node name="TagController.cs" selected="True" />
+              </Node>
             </Node>
-            <Node name="ServerLibrary" expanded="True" />
-            <Node name="TelegramBotListify" selected="True">
+            <Node name="TelegramBotListify">
               <Node name="Services" expanded="True" />
             </Node>
           </Node>
@@ -29,12 +30,5 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/BotHandler.cs" relfile="TelegramBotListify/BotHandler.cs" line="78" column="1" />
-    </BreakpointStore>
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

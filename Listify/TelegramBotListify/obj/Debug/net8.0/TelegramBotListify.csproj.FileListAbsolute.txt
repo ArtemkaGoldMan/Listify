@@ -1,9 +1,3 @@
-/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.csproj.AssemblyReference.cache
-/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.GeneratedMSBuildEditorConfig.editorconfig
-/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.AssemblyInfoInputs.cache
-/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.AssemblyInfo.cs
-/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.csproj.CoreCompileInputs.cache
-/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.sourcelink.json
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/bin/Debug/net8.0/Server.deps.json
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/bin/Debug/net8.0/Server.runtimeconfig.json
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/bin/Debug/net8.0/appsettings.Development.json
@@ -36,6 +30,12 @@
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/bin/Debug/net8.0/BaseLibrary.pdb
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/bin/Debug/net8.0/Server.pdb
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/bin/Debug/net8.0/ServerLibrary.pdb
+/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.csproj.AssemblyReference.cache
+/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.GeneratedMSBuildEditorConfig.editorconfig
+/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.AssemblyInfoInputs.cache
+/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.AssemblyInfo.cs
+/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.csproj.CoreCompileInputs.cache
+/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.sourcelink.json
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/Telegram.060598D2.Up2Date
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/TelegramBotListify.dll
 /Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/obj/Debug/net8.0/refint/TelegramBotListify.dll

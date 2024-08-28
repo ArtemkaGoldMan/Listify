@@ -1,34 +1,35 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Server/Controllers/TagController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/BotHandler.cs">
     <Files>
-      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="137" Column="6" />
-      <File FileName="TelegramBotListify/BotHandler.cs" Line="157" Column="61" />
-      <File FileName="Server/Controllers/ContentController.cs" Line="107" Column="1" />
-      <File FileName="TelegramBotListify/Services/UserManager.cs" Line="1" Column="1" />
-      <File FileName="Server/Controllers/TagController.cs" Line="16" Column="10" />
+      <File FileName="TelegramBotListify/BotHandler.cs" Line="24" Column="92" />
+      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="220" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="Listify" expanded="True">
-            <Node name="Server" expanded="True">
-              <Node name="Controllers" expanded="True">
-                <Node name="TagController.cs" selected="True" />
+          <Node name="Listify">
+            <Node name="Server">
+              <Node name="Controllers" expanded="True" />
+            </Node>
+            <Node name="ServerLibrary">
+              <Node name="Repositories">
+                <Node name="Contracts" expanded="True" />
               </Node>
             </Node>
-            <Node name="TelegramBotListify">
-              <Node name="Services" expanded="True" />
-            </Node>
+            <Node name="TelegramBotListify" selected="True" />
           </Node>
         </State>
       </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

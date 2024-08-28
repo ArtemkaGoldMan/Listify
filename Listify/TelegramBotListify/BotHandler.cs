@@ -5,11 +5,13 @@ using System.Net.Http.Json;
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Identity;
 using Telegram.Bot.Polling;
+using TelegramBotListify.Services;
 
 public class BotHandler
 {
     private readonly TelegramBotClient _bot;
     private readonly HttpClient _httpClient;
+    private readonly Helper _helper;
     private readonly ConcurrentDictionary<long, string> _userStates;
     private readonly ConcurrentDictionary<long, HashSet<int>> _userTagSelections;
     private readonly ContentManager _contentManager;
@@ -24,6 +26,7 @@ public class BotHandler
         _contentManager = new ContentManager(bot, httpClient, userStates, userTagSelections);
         _tagManager = new TagManager(bot, httpClient, userStates);
         _userManager = new UserManager(bot, httpClient, userStates);
+        _helper = new Helper(_bot);
     }
 
     public async Task SetBotCommands()
@@ -60,15 +63,18 @@ public class BotHandler
             switch (msg.Text)
             {
                 case "/start":
+                    await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                     await _userManager.HandleStartCommand(msg);
                     break;
 
                 case "/delete":
+                    await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                     await _userManager.HandleDeleteCommand(msg);
                     break;
 
                 default:
-                    await _bot.SendTextMessageAsync(msg.Chat, "Do not do that");
+                    await _helper.SendAndDeleteMessageAsync(msg.Chat, "Do not do that");
+                    await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                     break;
             }
         }
@@ -91,7 +97,7 @@ public class BotHandler
                     break;
 
                 case "Tag Menu":
-                    await _tagManager.ShowTagMenu(query.Message.Chat.Id, query.From.Id.ToString());
+                    await _tagManager.ShowTagMenu(query.Message.Chat.Id);
                     break;
 
                 case "Main Menu":
@@ -111,12 +117,12 @@ public class BotHandler
                 //--------------------------Contants----------------
 
                 case "Show Contents":
-                    await _contentManager.ShowContents(query.Message.Chat.Id, query.From.Id.ToString());
+                    await _contentManager.ShowContents(query.Message.Chat.Id);
                     break;
 
                 case "One Content Managing":
                     var contentId = int.Parse(callbackData[1]);
-                    await _contentManager.HandleContentOptions(query.Message.Chat.Id, query.From.Id.ToString(), contentId);
+                    await _contentManager.HandleContentOptions(query.Message.Chat.Id, contentId);
                     break;
 
                 case "Add Content":
@@ -124,49 +130,49 @@ public class BotHandler
                     break;
 
                 case "Delete Content":
-                    await _contentManager.ShowContentsForDeletion(query.Message.Chat.Id, query.From.Id.ToString());
+                    await _contentManager.ShowContentsForDeletion(query.Message.Chat.Id);
                     break;
 
                 case "deleteContent":
                     contentId = int.Parse(callbackData[1]);
-                    await _contentManager.HandleDeleteContent(query.Message.Chat.Id, query.From.Id.ToString(), contentId);
+                    await _contentManager.HandleDeleteContent(query.Message.Chat.Id, contentId);
                     break;
 
                 case "addTag":
                     contentId = int.Parse(callbackData[1]);
-                    await _contentManager.ShowTagsForAdding(query.Message.Chat.Id, query.From.Id.ToString(), contentId);
+                    await _contentManager.ShowTagsForAdding(query.Message.Chat.Id, contentId);
                     break;
 
                 case "addTagToContent":
                     contentId = int.Parse(callbackData[1]);
                     tagId = int.Parse(callbackData[2]);
-                    await _contentManager.AddTagToContent(query.Message.Chat.Id, query.From.Id.ToString(), contentId, tagId);
+                    await _contentManager.AddTagToContent(query.Message.Chat.Id, contentId, tagId);
                     break;
 
                 case "showRemoveTag":
                     contentId = int.Parse(callbackData[1]);
-                    await _contentManager.ShowRemoveTagMenu(query.Message.Chat.Id, query.From.Id.ToString(), contentId);
+                    await _contentManager.ShowRemoveTagMenu(query.Message.Chat.Id, contentId);
                     break;
 
                 case "removeTagFromContent":
                     contentId = int.Parse(callbackData[1]);
                     tagId = int.Parse(callbackData[2]);
-                    await _contentManager.RemoveTagFromContent(query.Message.Chat.Id, query.From.Id.ToString(), contentId, tagId);
+                    await _contentManager.RemoveTagFromContent(query.Message.Chat.Id, contentId, tagId);
                     break;
                 ////////////////
                 case "Show with filter":
-                    await _contentManager.ShowContentsToList(query.Message.Chat.Id, query.From.Id.ToString());
+                    await _contentManager.ShowContentsToList(query.Message.Chat.Id);
                     break;
 
                 // Handle tag selection
                 case "countTag":
                     var tagIdToCount = int.Parse(callbackData[1]);
-                    await _contentManager.HandleTagSelection(query.Message.Chat.Id, query.From.Id.ToString(), tagIdToCount, true);
+                    await _contentManager.HandleTagSelection(query.Message.Chat.Id, tagIdToCount, true);
                     break;
 
                 case "uncountTag":
                     var tagIdToUncount = int.Parse(callbackData[1]);
-                    await _contentManager.HandleTagSelection(query.Message.Chat.Id, query.From.Id.ToString(), tagIdToUncount, false);
+                    await _contentManager.HandleTagSelection(query.Message.Chat.Id, tagIdToUncount, false);
                     break;
 
 

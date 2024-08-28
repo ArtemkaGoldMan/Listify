@@ -111,7 +111,7 @@ public class ContentController : ControllerBase
         var filteredContents = await _contentRepository.GetContentsByUserIdAndTagListAsync(userId, tagIds);
         if (filteredContents == null || !filteredContents.Any())
         {
-            return NotFound($"No contents found for user {userId} with the specified tags.");
+            return Ok($"No contents found for user {userId} with the specified tags.");
         }
 
         return Ok(filteredContents);

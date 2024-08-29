@@ -63,7 +63,7 @@ public class BotHandler
             switch (msg.Text)
             {
                 case "/start":
-                    await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+                    //await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId); // it is removed due to deleting chat by telegram because of no message((( 
                     await _userManager.HandleStartCommand(msg);
                     break;
 
@@ -84,9 +84,9 @@ public class BotHandler
     {
         if (update is { CallbackQuery: { } query })
         {
-            await _bot.DeleteMessageAsync(query.Message.Chat.Id, query.Message.MessageId);
+            await _bot.DeleteMessageAsync(query.Message!.Chat.Id, query.Message.MessageId);
 
-            var callbackData = query.Data.Split(':');
+            var callbackData = query.Data!.Split(':');
             var action = callbackData[0];
 
             switch (action)
@@ -111,7 +111,7 @@ public class BotHandler
 
                 case "Delete Tag":
                     var tagId = int.Parse(callbackData[1]);
-                    await _tagManager.HandleDeleteTag(query.Message.Chat.Id, query.From.Id.ToString(), tagId);
+                    await _tagManager.HandleDeleteTag(query.Message.Chat.Id, tagId);
                     break;
 
                 //--------------------------Contants----------------
@@ -159,12 +159,12 @@ public class BotHandler
                     tagId = int.Parse(callbackData[2]);
                     await _contentManager.RemoveTagFromContent(query.Message.Chat.Id, contentId, tagId);
                     break;
-                ////////////////
+         
                 case "Show with filter":
                     await _contentManager.ShowContentsToList(query.Message.Chat.Id);
                     break;
 
-                // Handle tag selection
+                // Handle tag selection for filtering
                 case "countTag":
                     var tagIdToCount = int.Parse(callbackData[1]);
                     await _contentManager.HandleTagSelection(query.Message.Chat.Id, tagIdToCount, true);

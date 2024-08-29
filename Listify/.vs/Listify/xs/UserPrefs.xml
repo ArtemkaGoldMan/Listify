@@ -1,35 +1,32 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
-  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/BotHandler.cs">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/artemo/Projects/Listify_Project/Listify/TelegramBotListify/Services/ContentManager.cs" relfile="TelegramBotListify/Services/ContentManager.cs" line="382" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/Services/ContentManager.cs">
     <Files>
-      <File FileName="TelegramBotListify/BotHandler.cs" Line="24" Column="92" />
-      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="220" Column="1" />
+      <File FileName="TelegramBotListify/BotHandler.cs" Line="90" Column="42" />
+      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="400" Column="1" />
+      <File FileName="TelegramBotListify/Services/Helper.cs" Line="24" Column="53" />
+      <File FileName="Server/Controllers/ContentController.cs" Line="88" Column="33" />
+      <File FileName="Server/Controllers/TagController.cs" Line="26" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="Listify">
+          <Node name="Listify" expanded="True">
             <Node name="Server">
               <Node name="Controllers" expanded="True" />
-            </Node>
-            <Node name="ServerLibrary">
-              <Node name="Repositories">
-                <Node name="Contracts" expanded="True" />
-              </Node>
             </Node>
             <Node name="TelegramBotListify" selected="True" />
           </Node>
         </State>
       </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
-      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
 </Properties>

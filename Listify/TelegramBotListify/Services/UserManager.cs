@@ -35,7 +35,7 @@ public class UserManager
     {
         var telegramUserId = msg.From!.Id.ToString();
 
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{telegramUserId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             var userDto = new UserDTO { TelegramUserID = telegramUserId };
@@ -69,13 +69,13 @@ public class UserManager
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task HandleDeleteCommand(Message msg)
     {
-        var telegramUserId = msg.From.Id.ToString();
+        var telegramUserId = msg.From!.Id.ToString();
 
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{telegramUserId}");
         if (userResponse.IsSuccessStatusCode)
         {
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
-            var deleteResponse = await _httpClient.DeleteAsync($"api/Users/{user.UserID}");
+            var deleteResponse = await _httpClient.DeleteAsync($"api/Users/deleteUser/{user!.UserID}");
             if (deleteResponse.IsSuccessStatusCode)
             {
                 await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, $"User with ID {user.UserID} has been deleted.");

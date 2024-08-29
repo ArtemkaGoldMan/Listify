@@ -39,7 +39,6 @@ public class ContentManager
     /// Displays a menu of content-related options to the user. Options include adding a tag, removing a tag, deleting content, and returning to the contents list.
     /// </summary>
     /// <param name="chatId">The unique identifier for the chat where the content options menu should be displayed.</param>
-    /// <param name="telegramUserId">The unique identifier of the Telegram user who is interacting with the content menu.</param>
     /// <param name="contentId">The unique identifier of the content item for which the options are being displayed.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
     public async Task HandleContentOptions(long chatId, int contentId)
@@ -69,11 +68,10 @@ public class ContentManager
     /// an option to return to the main content menu if the user wishes to do so.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the menu should be displayed.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to manage their content.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ShowContents(long chatId)
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -87,7 +85,7 @@ public class ContentManager
             return;
         }
 
-        var contentsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}");
+        var contentsResponse = await _httpClient.GetAsync($"api/Content/getContentsByUserId/{user.UserID}");
         if (!contentsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve contents.");
@@ -114,12 +112,11 @@ public class ContentManager
         await _bot.SendTextMessageAsync(chatId, "Select content to manage or go back to content menu:", replyMarkup: submenuKeyboard);
     }
 
-    /// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ///
 
     public async Task ShowContentsToList(long chatId)
     {
         // Retrieve user information
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -134,7 +131,7 @@ public class ContentManager
         }
 
         // Retrieve tags
-        var tagsResponse = await _httpClient.GetAsync($"api/Tag/{user.UserID}");
+        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user.UserID}");
         if (!tagsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
@@ -148,13 +145,12 @@ public class ContentManager
 
         // Retrieve contents based on selected tags
         var contentsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}/contentsByTags?{string.Join("&", selectedTags.Select(t => $"tagIds={t}"))}");
-        if (!contentsResponse.IsSuccessStatusCode)
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve contents.");
-            await ShowContentMenu(chatId);
-        }
 
-        var contents = await contentsResponse.Content.ReadFromJsonAsync<IEnumerable<ContentDTO>>();
+        IEnumerable<ContentDTO>? contents = null;
+        if (contentsResponse.IsSuccessStatusCode)
+        {
+            contents = await contentsResponse.Content.ReadFromJsonAsync<IEnumerable<ContentDTO>>();
+        }
 
         // Create message with contents
         var messageBuilder = new StringBuilder();
@@ -164,7 +160,17 @@ public class ContentManager
         {
             foreach (var content in contents)
             {
-                messageBuilder.AppendLine($"- {content.Name} (ID: {content.ContentID})");
+                // Retrieve tags for each content
+                var contentTagsResponse = await _httpClient.GetAsync($"api/Content/getTagsByContentId/{user.UserID}/{content.ContentID}/tags");
+                IEnumerable<TagDTO>? contentTags = null;
+                if (contentTagsResponse.IsSuccessStatusCode)
+                {
+                    contentTags = await contentTagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
+                }
+
+                // Build content message with tags
+                var contentTagNames = contentTags != null ? string.Join(", ", contentTags.Select(t => t.Name)) : "No tags";
+                messageBuilder.AppendLine($"- {content.Name} [Tags: {contentTagNames}]");
             }
         }
         else
@@ -185,7 +191,7 @@ public class ContentManager
         // Add "Content Menu" button
         inlineButtons.Add(new[]
         {
-            InlineKeyboardButton.WithCallbackData("Content Menu")
+        InlineKeyboardButton.WithCallbackData("Content Menu")
         });
 
         var tagKeyboard = new InlineKeyboardMarkup(inlineButtons);
@@ -193,6 +199,8 @@ public class ContentManager
         // Send the message with the "Content Menu" button and tag keyboard
         await _bot.SendTextMessageAsync(chatId, messageBuilder.ToString(), replyMarkup: tagKeyboard);
     }
+
+
 
     public async Task HandleTagSelection(long chatId,int tagId, bool isAdding)
     {
@@ -212,22 +220,16 @@ public class ContentManager
     }
 
 
-
-    /// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ////// ///
-
-
-
     /// <summary>
     /// Displays a menu to the user for selecting content to delete. 
     /// Retrieves the list of content items associated with the user and presents them as inline buttons 
     /// for deletion. The user can select a content item to delete or choose to go back to the content menu.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the menu should be displayed.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to delete content.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ShowContentsForDeletion(long chatId)
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -241,7 +243,7 @@ public class ContentManager
             return;
         }
 
-        var contentsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}");
+        var contentsResponse = await _httpClient.GetAsync($"api/Content/getContentsByUserId/{user.UserID}");
         if (!contentsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve contents.");
@@ -277,16 +279,15 @@ public class ContentManager
     /// and refreshes the list of contents available for deletion.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the deletion confirmation or error message should be sent.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to delete the content.</param>
     /// <param name="contentId">The ID of the content item to be deleted.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task HandleDeleteContent(long chatId,int contentId)
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (userResponse.IsSuccessStatusCode)
         {
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
-            var deleteResponse = await _httpClient.DeleteAsync($"api/Content/{user!.UserID}/{contentId}");
+            var deleteResponse = await _httpClient.DeleteAsync($"api/Content/deleteContent/{user!.UserID}/{contentId}");
             if (deleteResponse.IsSuccessStatusCode)
             {
                 await _helper.SendAndDeleteMessageAsync(chatId, $"Content has been deleted.");
@@ -334,7 +335,7 @@ public class ContentManager
         var telegramUserId = msg.From!.Id.ToString();
 
         // Fetch user by telegram ID to get the user ID
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{telegramUserId}");
         if (userResponse.IsSuccessStatusCode)
         {
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
@@ -342,7 +343,7 @@ public class ContentManager
             {
                 // Create content for the user
                 var contentDto = new ContentDTO { Name = contentName };
-                var createResponse = await _httpClient.PostAsJsonAsync($"api/Content/{user.UserID}", contentDto);
+                var createResponse = await _httpClient.PostAsJsonAsync($"api/Content/createContent/{user.UserID}", contentDto);
                 if (createResponse.IsSuccessStatusCode)
                 {
                     await _helper.SendAndDeleteMessageAsync(msg.Chat, $"Content '{contentName}' has been added successfully.");
@@ -374,13 +375,12 @@ public class ContentManager
     /// the content options menu.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the menu should be displayed.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to manage tags.</param>
     /// <param name="contentId">The ID of the content for which tags are being managed.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ShowTagsForAdding(long chatId, int contentId)
 
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -394,7 +394,9 @@ public class ContentManager
             return;
         }
 
-        var tagsResponse = await _httpClient.GetAsync($"api/Tag/{user.UserID}");
+        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user.UserID}");
+
+
         if (!tagsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
@@ -404,7 +406,7 @@ public class ContentManager
         var tags = await tagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
 
         // Get tags that are already associated with the content
-        var contentTagsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}/{contentId}/tags");
+        var contentTagsResponse = await _httpClient.GetAsync($"api/Content/getTagsByContentId/{user.UserID}/{contentId}/tags");
         var contentTags = await contentTagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
 
         var inlineButtons = new List<IEnumerable<InlineKeyboardButton>>();
@@ -440,14 +442,13 @@ public class ContentManager
     /// state of the tags associated with the content.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the addition confirmation should be sent.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to add the tag.</param>
     /// <param name="contentId">The ID of the content to which the tag is being added.</param>
     /// <param name="tagId">The ID of the tag to be added to the content.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task AddTagToContent(long chatId, int contentId, int tagId)
 
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -484,14 +485,13 @@ public class ContentManager
     /// the content options menu if no tag removal is desired.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the menu should be displayed.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to remove tags.</param>
     /// <param name="contentId">The ID of the content from which tags need to be removed.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ShowRemoveTagMenu(long chatId, int contentId)
 
     {
         // Fetch the tags connected to this content
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -505,7 +505,7 @@ public class ContentManager
             return;
         }
 
-        var tagsResponse = await _httpClient.GetAsync($"api/Content/{user.UserID}/{contentId}/tags");
+        var tagsResponse = await _httpClient.GetAsync($"api/Content/getTagsByContentId/{user.UserID}/{contentId}/tags");
         if (!tagsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
@@ -541,14 +541,13 @@ public class ContentManager
     /// to reflect the updated list of tags associated with the content.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the removal confirmation should be sent.</param>
-    /// <param name="telegramUserId">The Telegram user ID of the person requesting to remove the tag.</param>
     /// <param name="contentId">The ID of the content from which the tag is to be removed.</param>
     /// <param name="tagId">The ID of the tag to be removed from the content.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task RemoveTagFromContent(long chatId, int contentId, int tagId)
 
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");

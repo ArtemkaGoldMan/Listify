@@ -17,7 +17,7 @@ public class Program
         var builder = new ConfigurationBuilder().AddUserSecrets<Program>();
         var configuration = builder.Build();
 
-        string botToken = configuration["TelegramBotToken"];
+        string? botToken = configuration["TelegramBotToken"];
         string apiBaseUrl = "http://localhost:5038";
 
         if (string.IsNullOrEmpty(botToken))

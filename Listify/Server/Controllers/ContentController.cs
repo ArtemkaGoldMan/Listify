@@ -14,7 +14,7 @@ public class ContentController : ControllerBase
         _contentRepository = contentRepository;
     }
 
-    [HttpPost("{userId}")]
+    [HttpPost("createContent/{userId}")]
     public async Task<IActionResult> CreateContent(int userId, [FromBody] ContentDTO contentDto)
     {
         if (!ModelState.IsValid)
@@ -31,7 +31,7 @@ public class ContentController : ControllerBase
         return CreatedAtAction(nameof(GetContentById), new { userId, contentId = createdContent.ContentID }, createdContent);
     }
 
-    [HttpGet("{userId}")]
+    [HttpGet("getContentsByUserId/{userId}")]
     public async Task<IActionResult> GetContentsByUserId(int userId)
     {
         var contents = await _contentRepository.GetContentsByUserIdAsync(userId);
@@ -72,7 +72,7 @@ public class ContentController : ControllerBase
         return Ok(updatedContent);
     }
 
-    [HttpDelete("{userId}/{contentId}")]
+    [HttpDelete("deleteContent/{userId}/{contentId}")]
     public async Task<IActionResult> DeleteContent(int userId, int contentId)
     {
         var success = await _contentRepository.DeleteContentAsync(userId, contentId);
@@ -85,7 +85,7 @@ public class ContentController : ControllerBase
     }
 
     // to get all tags for a specific content
-    [HttpGet("{userId}/{contentId}/tags")]
+    [HttpGet("getTagsByContentId/{userId}/{contentId}/tags")]
     public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsByContentId(int userId, int contentId)
     {
         var tags = await _contentRepository.GetTagsByContentIdAsync(userId, contentId);
@@ -111,7 +111,7 @@ public class ContentController : ControllerBase
         var filteredContents = await _contentRepository.GetContentsByUserIdAndTagListAsync(userId, tagIds);
         if (filteredContents == null || !filteredContents.Any())
         {
-            return Ok($"No contents found for user {userId} with the specified tags.");
+            return NotFound($"No contents found for user {userId} with the specified tags.");
         }
 
         return Ok(filteredContents);

@@ -32,7 +32,7 @@ namespace Server.Controllers
         }
 
 
-        [HttpGet("{userId}")]
+        [HttpGet("getUserByID/{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
@@ -42,7 +42,7 @@ namespace Server.Controllers
             return Ok(user);
         }
 
-        [HttpGet("telegram/{telegramUserId}")]
+        [HttpGet("getUserByTelegramUserId/{telegramUserId}")]
         public async Task<IActionResult> GetUserByTelegramUserId(string telegramUserId)
         {
             var user = await _userRepository.GetUserByTelegramUserIdAsync(telegramUserId);
@@ -52,7 +52,7 @@ namespace Server.Controllers
             return Ok(user);
         }
 
-        [HttpDelete("{userId}")]
+        [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
             var result = await _userRepository.DeleteUserAsync(userId);

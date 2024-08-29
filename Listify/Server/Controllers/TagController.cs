@@ -17,21 +17,21 @@ namespace Server.Controllers
             _tagRepository = tagRepository;
         }
 
-        [HttpPost("{userId}")]
+        [HttpPost("createTag/{userId}")]
         public async Task<IActionResult> CreateTag(int userId, TagDTO tagDto)
         {
             var createdTag = await _tagRepository.CreateTagAsync(userId, tagDto);
             return CreatedAtAction(nameof(GetTagById), new { userId, tagId = createdTag.TagID }, createdTag);
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("getTagsByUserId/{userId}")]
         public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsByUserId(int userId)
         {
             var tags = await _tagRepository.GetTagsByUserIdAsync(userId);
             return Ok(tags);
         }
 
-        [HttpGet("{userId}/{tagId}")]
+        [HttpGet("getTagInfoById/{userId}/{tagId}")]
         public async Task<ActionResult<TagDTO>> GetTagById(int userId, int tagId)
         {
             var tag = await _tagRepository.GetTagByIdAsync(userId, tagId);
@@ -40,7 +40,7 @@ namespace Server.Controllers
             return Ok(tag);
         }
 
-        [HttpPut("{userId}/{tagId}")]
+        [HttpPut("updateTagInfoById{userId}/{tagId}")]
         public async Task<IActionResult> UpdateTag(int userId, int tagId, TagDTO tagDto)
         {
             var updatedTag = await _tagRepository.UpdateTagAsync(userId, tagId, tagDto);
@@ -49,7 +49,7 @@ namespace Server.Controllers
             return Ok(updatedTag);
         }
 
-        [HttpDelete("{userId}/{tagId}")]
+        [HttpDelete("deleteTag/{userId}/{tagId}")]
         public async Task<IActionResult> DeleteTag(int userId, int tagId)
         {
             var deleted = await _tagRepository.DeleteTagAsync(userId, tagId);

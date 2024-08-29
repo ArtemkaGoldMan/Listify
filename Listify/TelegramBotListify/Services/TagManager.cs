@@ -31,7 +31,7 @@ public class TagManager
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
     public async Task ShowTagMenu(long chatId)
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
@@ -45,7 +45,7 @@ public class TagManager
             return;
         }
 
-        var tagsResponse = await _httpClient.GetAsync($"api/Tag/{user.UserID}");
+        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user.UserID}");
         if (!tagsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
@@ -99,12 +99,12 @@ public class TagManager
         var tagName = msg.Text;
         var telegramUserId = msg.From!.Id.ToString();
 
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{telegramUserId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{telegramUserId}");
         if (userResponse.IsSuccessStatusCode)
         {
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
             var tagDto = new TagDTO { Name = tagName };
-            var createResponse = await _httpClient.PostAsJsonAsync($"api/Tag/{user!.UserID}", tagDto);
+            var createResponse = await _httpClient.PostAsJsonAsync($"api/Tag/createTag/{user!.UserID}", tagDto);
             if (createResponse.IsSuccessStatusCode)
             {
                 await _helper.SendAndDeleteMessageAsync(msg.Chat, $"Tag '{tagName}' has been added successfully.");
@@ -131,16 +131,15 @@ public class TagManager
     /// If there is an error retrieving user information or deleting the tag, an appropriate error message is sent.
     /// </summary>
     /// <param name="chatId">The unique identifier for the chat where the notification about the tag deletion should be sent.</param>
-    /// <param name="telegramUserId">The unique identifier of the user whose tag is being deleted.</param>
     /// <param name="tagId">The unique identifier of the tag to be deleted.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
-    public async Task HandleDeleteTag(long chatId, string telegramUserId, int tagId)
+    public async Task HandleDeleteTag(long chatId, int tagId)
     {
-        var userResponse = await _httpClient.GetAsync($"api/Users/telegram/{chatId}");
+        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (userResponse.IsSuccessStatusCode)
         {
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
-            var deleteResponse = await _httpClient.DeleteAsync($"api/Tag/{user!.UserID}/{tagId}");
+            var deleteResponse = await _httpClient.DeleteAsync($"api/Tag/deleteTag/{user!.UserID}/{tagId}");
             if (deleteResponse.IsSuccessStatusCode)
             {
                 await _helper.SendAndDeleteMessageAsync(chatId, $"Tag has been deleted.");

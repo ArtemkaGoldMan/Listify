@@ -276,7 +276,10 @@ public class ContentManager
             await _bot.SendTextMessageAsync(chatId, "No contents found.", replyMarkup: inlineButtons);
             return;
         }
-        _userStates[chatId] = "DelitingMenu";
+
+        //deleting state
+        _userStates[chatId] = "DeletingMenu";
+
         // Create buttons for each content
         var inlineButtonsForContents = contents.Select(content => new[]
         {
@@ -325,18 +328,19 @@ public class ContentManager
             await _helper.SendAndDeleteMessageAsync(chatId, "User not found.");
         }
 
-        if (_userStates.TryGetValue(chatId, out var state))
+        _userStates.TryGetValue(chatId, out var state);
+        
+        if (state == "DeletingMenu")
         {
-            if (state == "DelitingMenu")
-            {
-                // Show the Content Menu again for further actions
-                await ShowContentsForDeletion(chatId);
-            }
-            else
-            {
-                await ShowContentMenu(chatId);
-            }
+            // Show the Content Menu again for further actions
+            _userStates.TryRemove(chatId, out _);
+            await ShowContentsForDeletion(chatId);
         }
+        else
+        {
+            await ShowContents(chatId);
+        }
+        
     }
 
     /// <summary>

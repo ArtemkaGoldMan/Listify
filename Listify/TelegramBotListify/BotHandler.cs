@@ -94,6 +94,7 @@ public class BotHandler
             {
                 //--------------------------Menus----------------
                 case "Content Menu":
+                    _userStates.TryRemove(query.Message.Chat.Id, out _);
                     await _contentManager.ShowContentMenu(query.Message.Chat.Id);
                     break;
 

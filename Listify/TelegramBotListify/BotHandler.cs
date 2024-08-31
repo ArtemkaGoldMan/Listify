@@ -13,7 +13,7 @@ public class BotHandler
     private readonly HttpClient _httpClient;
     private readonly Helper _helper;
     private readonly ConcurrentDictionary<long, string> _userStates;
-    private readonly ConcurrentDictionary<long, HashSet<int>> _userTagSelections;
+    //private readonly ConcurrentDictionary<long, HashSet<int>> _userTagSelections;
     private readonly ContentManager _contentManager;
     private readonly TagManager _tagManager;
     private readonly UserManager _userManager;
@@ -42,8 +42,9 @@ public class BotHandler
 
     public async Task OnError(Exception exception, HandleErrorSource source)
     {
-        Console.WriteLine(exception);
+        await Task.Run(() => Console.WriteLine(exception));
     }
+
 
     public async Task OnMessage(Message msg)
     {
@@ -63,7 +64,7 @@ public class BotHandler
             switch (msg.Text)
             {
                 case "/start":
-                    //await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId); // it is removed due to deleting chat by telegram because of no message((( 
+                    //await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId); // it is removed due to deleting chat by telegram because of no message(((
                     await _userManager.HandleStartCommand(msg);
                     break;
 
@@ -120,9 +121,10 @@ public class BotHandler
                     await _contentManager.ShowContents(query.Message.Chat.Id);
                     break;
 
-                case "One Content Managing":
+                case "Specific Content Managing":
                     var contentId = int.Parse(callbackData[1]);
-                    await _contentManager.HandleContentOptions(query.Message.Chat.Id, contentId);
+                    var contentName = callbackData[2];
+                    await _contentManager.HandleContentOptions(query.Message.Chat.Id, contentId, contentName);
                     break;
 
                 case "Add Content":
@@ -140,24 +142,22 @@ public class BotHandler
 
                 case "addTag":
                     contentId = int.Parse(callbackData[1]);
-                    await _contentManager.ShowTagsForAdding(query.Message.Chat.Id, contentId);
+                    contentName = callbackData[2];
+                    await _contentManager.ShowTagsForAdding(query.Message.Chat.Id, contentId, contentName);
                     break;
 
                 case "addTagToContent":
                     contentId = int.Parse(callbackData[1]);
                     tagId = int.Parse(callbackData[2]);
-                    await _contentManager.AddTagToContent(query.Message.Chat.Id, contentId, tagId);
-                    break;
-
-                case "showRemoveTag":
-                    contentId = int.Parse(callbackData[1]);
-                    await _contentManager.ShowRemoveTagMenu(query.Message.Chat.Id, contentId);
+                    contentName = callbackData[3];
+                    await _contentManager.AddTagToContent(query.Message.Chat.Id, contentId, tagId, contentName);
                     break;
 
                 case "removeTagFromContent":
                     contentId = int.Parse(callbackData[1]);
                     tagId = int.Parse(callbackData[2]);
-                    await _contentManager.RemoveTagFromContent(query.Message.Chat.Id, contentId, tagId);
+                    contentName = callbackData[3];
+                    await _contentManager.RemoveTagFromContent(query.Message.Chat.Id, contentId, tagId, contentName);
                     break;
          
                 case "Show with filter":

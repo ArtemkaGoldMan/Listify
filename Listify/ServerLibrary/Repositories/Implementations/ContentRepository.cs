@@ -27,13 +27,13 @@ namespace ServerLibrary.Repositories.Implementations
             if (user == null)
             {
                 _logger.LogWarning($"User with ID {userId} not found.");
-                return null;
+                return null!;
             }
 
             if (user.ListOfContent == null)
             {
                 _logger.LogWarning($"User with ID {userId} does not have a list of content.");
-                return null;
+                return null!;
             }
 
             var content = new Content
@@ -57,13 +57,13 @@ namespace ServerLibrary.Repositories.Implementations
             if (user == null)
             {
                 _logger.LogWarning($"User with ID {userId} not found.");
-                return null;
+                return null!;
             }
 
             if (user.ListOfContent == null)
             {
                 _logger.LogWarning($"User with ID {userId} does not have a list of content.");
-                return null;
+                return null!;
             }
 
             var contents = user.ListOfContent.Contents!.Select(c => new ContentDTO
@@ -84,7 +84,7 @@ namespace ServerLibrary.Repositories.Implementations
             if (content == null)
             {
                 _logger.LogWarning($"Content with ID {contentId} for user {userId} not found.");
-                return null;
+                return null!;
             }
 
             return new ContentDTO
@@ -103,7 +103,7 @@ namespace ServerLibrary.Repositories.Implementations
             if (content == null)
             {
                 _logger.LogWarning($"Content with ID {contentId} for user {userId} not found.");
-                return null;
+                return null!;
             }
 
             content.Name = contentDto.Name;
@@ -156,8 +156,8 @@ namespace ServerLibrary.Repositories.Implementations
         {
             // Fetch contents associated with the specified tags for the given user
             var contents = await _context.ContentTags
-                .Where(ct => ct.Content.ListOfContent.UserID == userId && tagIds.Contains(ct.TagID))
-                .GroupBy(ct => new { ct.Content.ContentID, ct.Content.Name, ct.Content.Description, ct.Content.ImageUrl, ct.Content.ListOfContentID })
+                .Where(ct => ct.Content!.ListOfContent!.UserID == userId && tagIds.Contains(ct.TagID))
+                .GroupBy(ct => new { ct.Content!.ContentID, ct.Content.Name, ct.Content.Description, ct.Content.ImageUrl, ct.Content.ListOfContentID })
                 .Where(g => g.Select(ct => ct.TagID).Distinct().Count() == tagIds.Count())
                 .Select(g => new ContentDTO
                 {

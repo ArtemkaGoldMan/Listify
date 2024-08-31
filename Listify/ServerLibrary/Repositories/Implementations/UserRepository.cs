@@ -56,7 +56,7 @@ namespace ServerLibrary.Repositories.Implementations
                 .FirstOrDefaultAsync(u => u.UserID == userId);
 
             if (user == null)
-                return null;
+                return null!;
 
             return new UserDTO
             {
@@ -74,7 +74,7 @@ namespace ServerLibrary.Repositories.Implementations
                 .FirstOrDefaultAsync(u => u.TelegramUserID == telegramUserId);
 
             if (user == null)
-                return null;
+                return null!;
 
             return new UserDTO
             {

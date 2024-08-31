@@ -42,8 +42,8 @@ public class UserManager
             var response = await _httpClient.PostAsJsonAsync("api/Users/CreateUser", userDto);
             if (response.IsSuccessStatusCode)
             {
-                var createdUser = await response.Content.ReadFromJsonAsync<UserDTO>();
-                await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, $"User created with ID {createdUser!.UserID}");
+                //var createdUser = await response.Content.ReadFromJsonAsync<UserDTO>();
+                await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, $"User has been created.", 500);
 
                 await ShowMainMenu(msg.Chat.Id);
             }
@@ -54,7 +54,7 @@ public class UserManager
         }
         else
         {
-            await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, "User has already been created.");
+            await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, "User has already been created.", 500);
             await ShowMainMenu(msg.Chat.Id);
         }
     }
@@ -78,7 +78,7 @@ public class UserManager
             var deleteResponse = await _httpClient.DeleteAsync($"api/Users/deleteUser/{user!.UserID}");
             if (deleteResponse.IsSuccessStatusCode)
             {
-                await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, $"User with ID {user.UserID} has been deleted.");
+                await _helper.SendAndDeleteMessageAsync(msg.Chat.Id, $"User has been deleted.");
             }
             else
             {

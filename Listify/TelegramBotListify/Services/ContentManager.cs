@@ -7,6 +7,7 @@ using BaseLibrary.DTOs;
 using System.Net.Http;
 using System.Text;
 using TelegramBotListify.Services;
+using Telegram.Bot.Types.Enums;
 
 public class ContentManager
 {
@@ -41,23 +42,22 @@ public class ContentManager
     /// <param name="chatId">The unique identifier for the chat where the content options menu should be displayed.</param>
     /// <param name="contentId">The unique identifier of the content item for which the options are being displayed.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
-    public async Task HandleContentOptions(long chatId, int contentId)
+    public async Task HandleContentOptions(long chatId, int contentId, string contentName)
     {
         var inlineKeyboard = new InlineKeyboardMarkup(new[]
         {
-        new[]
-        {
-            InlineKeyboardButton.WithCallbackData("Add Tag", $"addTag:{contentId}"),
-            InlineKeyboardButton.WithCallbackData("Remove Tag", $"showRemoveTag:{contentId}")
-        },
-        new[]
-        {
-            InlineKeyboardButton.WithCallbackData("Delete Content", $"deleteContent:{contentId}"),
-            InlineKeyboardButton.WithCallbackData("Back to Contents", "Show Contents")
-        }
+        new[]{ InlineKeyboardButton.WithCallbackData("Tags", $"addTag:{contentId}:{contentName}") },
+        new[]{ InlineKeyboardButton.WithCallbackData("Delete Content", $"deleteContent:{contentId}") },
+        new[]{ InlineKeyboardButton.WithCallbackData("Back to Contents", "Show Contents") }
         });
 
-        await _bot.SendTextMessageAsync(chatId, "Choose an option:", replyMarkup: inlineKeyboard);
+        await _bot.SendTextMessageAsync(
+            chatId,
+            $"<b>{contentName}</b>\nChoose an option:",
+            parseMode: ParseMode.Html,
+            replyMarkup: inlineKeyboard
+            );
+
     }
 
 
@@ -71,6 +71,7 @@ public class ContentManager
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ShowContents(long chatId)
     {
+        // Retrieve user information
         var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
@@ -85,6 +86,7 @@ public class ContentManager
             return;
         }
 
+        // Retrieve contents
         var contentsResponse = await _httpClient.GetAsync($"api/Content/getContentsByUserId/{user.UserID}");
         if (!contentsResponse.IsSuccessStatusCode)
         {
@@ -95,22 +97,33 @@ public class ContentManager
         var contents = await contentsResponse.Content.ReadFromJsonAsync<IEnumerable<ContentDTO>>();
         if (contents == null || !contents.Any())
         {
-            await _helper.SendAndDeleteMessageAsync(chatId, "No contents found.");
+            // If no contents found, show message with "Content Menu" button
+            var inlineButtons = new InlineKeyboardMarkup(new[]
+            {
+            InlineKeyboardButton.WithCallbackData("Content Menu")
+            });
+
+            await _bot.SendTextMessageAsync(chatId, "No contents found.", replyMarkup: inlineButtons);
             return;
         }
 
-        var inlineButtons = contents.Select(content => new[]
+        // Create buttons for each content
+        var inlineButtonsForContents = contents.Select(content => new[]
         {
-        InlineKeyboardButton.WithCallbackData(content.Name!, $"One Content Managing:{content.ContentID}")
-        });
+        InlineKeyboardButton.WithCallbackData(content.Name!, $"Specific Content Managing:{content.ContentID}:{content.Name!}")
+        }).ToList();
 
-        var submenuKeyboard = new InlineKeyboardMarkup(inlineButtons.Append(new[]
+        // Add "Content Menu" button
+        inlineButtonsForContents.Add(new[]
         {
         InlineKeyboardButton.WithCallbackData("Content Menu")
-        }));
+    });
+
+        var submenuKeyboard = new InlineKeyboardMarkup(inlineButtonsForContents);
 
         await _bot.SendTextMessageAsync(chatId, "Select content to manage or go back to content menu:", replyMarkup: submenuKeyboard);
     }
+
 
 
     public async Task ShowContentsToList(long chatId)
@@ -154,7 +167,7 @@ public class ContentManager
 
         // Create message with contents
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine("Here are your contents:");
+        messageBuilder.AppendLine("CONTENTS:");
 
         if (contents != null && contents.Any())
         {
@@ -175,7 +188,7 @@ public class ContentManager
         }
         else
         {
-            messageBuilder.AppendLine("No contents found for the selected tags.");
+            messageBuilder.AppendLine("\n*No contents found for the selected tags.");
         }
 
         // Create tag buttons
@@ -201,8 +214,7 @@ public class ContentManager
     }
 
 
-
-    public async Task HandleTagSelection(long chatId,int tagId, bool isAdding)
+    public async Task HandleTagSelection(long chatId, int tagId, bool isAdding)
     {
         var selectedTags = _userTagSelections.GetOrAdd(chatId, _ => new HashSet<int>());
 
@@ -229,6 +241,7 @@ public class ContentManager
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ShowContentsForDeletion(long chatId)
     {
+        // Retrieve user information
         var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
         {
@@ -243,6 +256,7 @@ public class ContentManager
             return;
         }
 
+        // Retrieve contents
         var contentsResponse = await _httpClient.GetAsync($"api/Content/getContentsByUserId/{user.UserID}");
         if (!contentsResponse.IsSuccessStatusCode)
         {
@@ -253,23 +267,32 @@ public class ContentManager
         var contents = await contentsResponse.Content.ReadFromJsonAsync<IEnumerable<ContentDTO>>();
         if (contents == null || !contents.Any())
         {
-            await _helper.SendAndDeleteMessageAsync(chatId, "No contents found.");
-            return;
-        }
-
-        var inlineButtons = contents.Select(content => new[]
-        {
-            InlineKeyboardButton.WithCallbackData($"Delete {content.Name}", $"deleteContent:{content.ContentID}")
+            // If no contents found, show message with "Content Menu" button
+            var inlineButtons = new InlineKeyboardMarkup(new[]
+            {
+            InlineKeyboardButton.WithCallbackData("Content Menu")
         });
 
-        var submenuKeyboard = new InlineKeyboardMarkup(inlineButtons.Append(new[]
+            await _bot.SendTextMessageAsync(chatId, "No contents found.", replyMarkup: inlineButtons);
+            return;
+        }
+        _userStates[chatId] = "DelitingMenu";
+        // Create buttons for each content
+        var inlineButtonsForContents = contents.Select(content => new[]
         {
-            InlineKeyboardButton.WithCallbackData("Back to Content Menu", "Content Menu")
-        }));
+        InlineKeyboardButton.WithCallbackData($"Delete <{content.Name}>", $"deleteContent:{content.ContentID}")
+    }).ToList();
 
-        await _bot.SendTextMessageAsync(chatId, "Select content to delete or go back to content menu:", replyMarkup: submenuKeyboard);
+        // Add "Content Menu" button
+        inlineButtonsForContents.Add(new[]
+        {
+        InlineKeyboardButton.WithCallbackData("Content Menu")
+    });
+
+        var submenuKeyboard = new InlineKeyboardMarkup(inlineButtonsForContents);
+
+        await _bot.SendTextMessageAsync(chatId, "Select content to delete or go back to Content Menu:", replyMarkup: submenuKeyboard);
     }
-
 
     /// <summary>
     /// Handles the deletion of a specific content item. 
@@ -281,7 +304,7 @@ public class ContentManager
     /// <param name="chatId">The unique identifier of the chat where the deletion confirmation or error message should be sent.</param>
     /// <param name="contentId">The ID of the content item to be deleted.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task HandleDeleteContent(long chatId,int contentId)
+    public async Task HandleDeleteContent(long chatId, int contentId)
     {
         var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (userResponse.IsSuccessStatusCode)
@@ -302,8 +325,18 @@ public class ContentManager
             await _helper.SendAndDeleteMessageAsync(chatId, "User not found.");
         }
 
-        // Show the Content Menu again for further actions
-        await ShowContentsForDeletion(chatId);
+        if (_userStates.TryGetValue(chatId, out var state))
+        {
+            if (state == "DelitingMenu")
+            {
+                // Show the Content Menu again for further actions
+                await ShowContentsForDeletion(chatId);
+            }
+            else
+            {
+                await ShowContentMenu(chatId);
+            }
+        }
     }
 
     /// <summary>
@@ -346,7 +379,7 @@ public class ContentManager
                 var createResponse = await _httpClient.PostAsJsonAsync($"api/Content/createContent/{user.UserID}", contentDto);
                 if (createResponse.IsSuccessStatusCode)
                 {
-                    await _helper.SendAndDeleteMessageAsync(msg.Chat, $"Content '{contentName}' has been added successfully.");
+                    await _helper.SendAndDeleteMessageAsync(msg.Chat, $"Content '{contentName}' has been added successfully.", 500);
                 }
                 else
                 {
@@ -377,8 +410,7 @@ public class ContentManager
     /// <param name="chatId">The unique identifier of the chat where the menu should be displayed.</param>
     /// <param name="contentId">The ID of the content for which tags are being managed.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task ShowTagsForAdding(long chatId, int contentId)
-
+    public async Task ShowTagsForAdding(long chatId, int contentId, string contentName)
     {
         var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
@@ -416,8 +448,8 @@ public class ContentManager
             inlineButtons.AddRange(tags.Select(tag =>
             {
                 bool isConnected = contentTags != null && contentTags.Any(ct => ct.TagID == tag.TagID);
-                string? buttonText = isConnected ? $"✅ {tag.Name}" : tag.Name;
-                string callbackData = isConnected ? $"removeTagFromContent:{contentId}:{tag.TagID}" : $"addTagToContent:{contentId}:{tag.TagID}";
+                string? buttonText = isConnected ? $"✅ {tag.Name}" : $"❌{tag.Name}";
+                string callbackData = isConnected ? $"removeTagFromContent:{contentId}:{tag.TagID}:{contentName}" : $"addTagToContent:{contentId}:{tag.TagID}:{contentName}";
 
                 return new[] { InlineKeyboardButton.WithCallbackData(buttonText!, callbackData) };
             }));
@@ -425,12 +457,12 @@ public class ContentManager
 
         inlineButtons.Add(new[]
         {
-        InlineKeyboardButton.WithCallbackData("Content Options", $"One Content Managing:{contentId}")
-    });
+        InlineKeyboardButton.WithCallbackData("Content Options", $"Specific Content Managing:{contentId}:{contentName}")
+        });
 
         var submenuKeyboard = new InlineKeyboardMarkup(inlineButtons);
 
-        await _bot.SendTextMessageAsync(chatId, "Select a tag to add or remove:", replyMarkup: submenuKeyboard);
+        await _bot.SendTextMessageAsync(chatId, $"<b>{contentName}</b>\nSelect a tag to add or remove:",parseMode: ParseMode.Html, replyMarkup: submenuKeyboard);
     }
 
     /// <summary>
@@ -445,7 +477,7 @@ public class ContentManager
     /// <param name="contentId">The ID of the content to which the tag is being added.</param>
     /// <param name="tagId">The ID of the tag to be added to the content.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task AddTagToContent(long chatId, int contentId, int tagId)
+    public async Task AddTagToContent(long chatId, int contentId, int tagId, string contentName)
 
     {
         var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
@@ -464,88 +496,25 @@ public class ContentManager
 
         var contentTag = new ContentTagDTO { ContentID = contentId, TagID = tagId };
         var addTagResponse = await _httpClient.PostAsJsonAsync($"api/Tag/{user.UserID}/addTagToContent", contentTag);
-        if (addTagResponse.IsSuccessStatusCode)
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, "Tag added to content.");
-        }
-        else
+        if (!addTagResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to add tag to content.");
         }
 
         // Refresh the tags menu
-        await ShowTagsForAdding(chatId, contentId);
+        await ShowTagsForAdding(chatId, contentId, contentName);
     }
-
-
-    /// <summary>
-    /// Displays a menu to the user for removing tags from a specified content item. 
-    /// Retrieves the tags associated with the content and presents them as inline buttons 
-    /// for the user to select which tag to remove. The user can also choose to go back to 
-    /// the content options menu if no tag removal is desired.
-    /// </summary>
-    /// <param name="chatId">The unique identifier of the chat where the menu should be displayed.</param>
-    /// <param name="contentId">The ID of the content from which tags need to be removed.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task ShowRemoveTagMenu(long chatId, int contentId)
-
-    {
-        // Fetch the tags connected to this content
-        var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
-        if (!userResponse.IsSuccessStatusCode)
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
-            return;
-        }
-
-        var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
-        if (user == null)
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, "User not found.");
-            return;
-        }
-
-        var tagsResponse = await _httpClient.GetAsync($"api/Content/getTagsByContentId/{user.UserID}/{contentId}/tags");
-        if (!tagsResponse.IsSuccessStatusCode)
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
-            return;
-        }
-
-        var tags = await tagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
-        if (tags == null || !tags.Any())
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, "No tags are currently associated with this content.");
-            return;
-        }
-
-        var inlineButtons = tags.Select(tag => new[]
-        {
-            InlineKeyboardButton.WithCallbackData(tag.Name!, $"removeTagFromContent:{contentId}:{tag.TagID}")
-        });
-
-        var submenuKeyboard = new InlineKeyboardMarkup(inlineButtons.Append(new[]
-        {
-            InlineKeyboardButton.WithCallbackData("Content Options", $"One Content Managing:{contentId}")
-        }));
-
-        await _bot.SendTextMessageAsync(chatId, "Select a tag to remove or go back:", replyMarkup: submenuKeyboard);
-    }
-
 
     /// <summary>
     /// Handles the removal of a specific tag from a content item. 
     /// Retrieves the user information to ensure the request is authorized, 
     /// then sends a request to remove the specified tag from the content. 
-    /// After the tag removal operation, the method refreshes the tag removal menu 
-    /// to reflect the updated list of tags associated with the content.
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat where the removal confirmation should be sent.</param>
     /// <param name="contentId">The ID of the content from which the tag is to be removed.</param>
     /// <param name="tagId">The ID of the tag to be removed from the content.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task RemoveTagFromContent(long chatId, int contentId, int tagId)
-
+    public async Task RemoveTagFromContent(long chatId, int contentId, int tagId, string contentName)
     {
         var userResponse = await _httpClient.GetAsync($"api/Users/getUserByTelegramUserId/{chatId}");
         if (!userResponse.IsSuccessStatusCode)
@@ -571,12 +540,8 @@ public class ContentManager
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to remove tag from content.");
         }
-        else
-        {
-            await _helper.SendAndDeleteMessageAsync(chatId, $"Tag has been removed from content.");
-        }
 
         // Refresh the tag removal menu
-        await ShowRemoveTagMenu(chatId, contentId);
+        await ShowTagsForAdding(chatId, contentId, contentName);
     }
 }

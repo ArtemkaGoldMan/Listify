@@ -26,13 +26,13 @@ namespace ServerLibrary.Repositories.Implementations
             if (user == null)
             {
                 _logger.LogWarning($"User with ID {userId} not found.");
-                return null;
+                return null!;
             }
 
             if (user.ListOfTags == null)
             {
                 _logger.LogWarning($"User with ID {userId} does not have a list of content.");
-                return null;
+                return null!;
             }
 
             var tag = new Tag
@@ -51,11 +51,11 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<TagDTO> GetTagByIdAsync(int userId, int tagId)
         {
-            var tag = await _context.Tags.Include(t => t.ListOfTags).FirstOrDefaultAsync(t => t.TagID == tagId && t.ListOfTags.UserID == userId);
+            var tag = await _context.Tags.Include(t => t.ListOfTags).FirstOrDefaultAsync(t => t.TagID == tagId && t.ListOfTags!.UserID == userId);
             if (tag == null)
             {
                 _logger.LogWarning($"Content with ID {tagId} for user {userId} not found.");
-                return null;
+                return null!;
             }
 
             return new TagDTO
@@ -69,17 +69,17 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<IEnumerable<TagDTO>> GetTagsByUserIdAsync(int userId)
         {
-            var user = await _context.Users.Include(u => u.ListOfTags).ThenInclude(lt => lt.Tags).FirstOrDefaultAsync(u => u.UserID == userId);
+            var user = await _context.Users.Include(u => u.ListOfTags).ThenInclude(lt => lt!.Tags).FirstOrDefaultAsync(u => u.UserID == userId);
             if (user == null)
             {
                 _logger.LogWarning($"User with ID {userId} not found.");
-                return null;
+                return null!;
             }
 
             if (user.ListOfTags == null)
             {
                 _logger.LogWarning($"User with ID {userId} does not have a list of content.");
-                return null;
+                return null!;
             }
 
             var tags = user.ListOfTags.Tags!.Select(t => new TagDTO
@@ -99,7 +99,7 @@ namespace ServerLibrary.Repositories.Implementations
             if (tag == null)
             {
                 _logger.LogWarning($"Content with ID {tagId} for user {userId} not found.");
-                return null;
+                return null!;
             }
 
             tag.Name = tagDto.Name;

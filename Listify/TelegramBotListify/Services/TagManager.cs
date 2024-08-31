@@ -105,13 +105,9 @@ public class TagManager
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
             var tagDto = new TagDTO { Name = tagName };
             var createResponse = await _httpClient.PostAsJsonAsync($"api/Tag/createTag/{user!.UserID}", tagDto);
-            if (createResponse.IsSuccessStatusCode)
+            if (!createResponse.IsSuccessStatusCode)
             {
-                await _helper.SendAndDeleteMessageAsync(msg.Chat, $"Tag '{tagName}' has been added successfully.");
-            }
-            else
-            {
-                await _helper.SendAndDeleteMessageAsync(msg.Chat, "Failed to add tag.");
+                await _helper.SendAndDeleteMessageAsync(msg.Chat, $"Failed to add tag {tagName}.");
             }
         }
         else
@@ -140,11 +136,7 @@ public class TagManager
         {
             var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
             var deleteResponse = await _httpClient.DeleteAsync($"api/Tag/deleteTag/{user!.UserID}/{tagId}");
-            if (deleteResponse.IsSuccessStatusCode)
-            {
-                await _helper.SendAndDeleteMessageAsync(chatId, $"Tag has been deleted.");
-            }
-            else
+            if (!deleteResponse.IsSuccessStatusCode)
             {
                 await _helper.SendAndDeleteMessageAsync(chatId, "Failed to delete tag.");
             }

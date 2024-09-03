@@ -37,7 +37,9 @@ namespace Server.Controllers
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
-                return NotFound();
+            {
+                return NotFound($"User with ID {user} not found");
+            }
 
             return Ok(user);
         }
@@ -47,7 +49,9 @@ namespace Server.Controllers
         {
             var user = await _userRepository.GetUserByTelegramUserIdAsync(telegramUserId);
             if (user == null)
-                return NotFound();
+            {
+                return NotFound($"User with ID {telegramUserId} not found");
+            }
 
             return Ok(user);
         }
@@ -57,7 +61,9 @@ namespace Server.Controllers
         {
             var result = await _userRepository.DeleteUserAsync(userId);
             if (!result)
-                return NotFound();
+            {
+                return NotFound($"User with ID {userId} not found");
+            }
 
             return NoContent();
         }

@@ -1,4 +1,5 @@
 ﻿using BaseLibrary.DTOs;
+using BaseLibrary.Entities;
 using Microsoft.AspNetCore.Mvc;
 using ServerLibrary.Repositories.Contracts;
 using ServerLibrary.Repositories.Implementations;
@@ -21,6 +22,11 @@ namespace Server.Controllers
         [HttpPost("createTag/{userId}")]
         public async Task<IActionResult> CreateTag(int userId, TagDTO tagDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // Check if the user can add more tags
             if (!await _tagRepository.CanAddTagAsync(userId))
             {
@@ -28,6 +34,11 @@ namespace Server.Controllers
             }
 
             var createdTag = await _tagRepository.CreateTagAsync(userId, tagDto);
+            if(createdTag == null)
+            {
+                return NotFound($"User with ID {userId} not found.");
+            }
+
             return CreatedAtAction(nameof(GetTagById), new { userId, tagId = createdTag.TagID }, createdTag);
         }
 
@@ -35,6 +46,12 @@ namespace Server.Controllers
         public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsByUserId(int userId)
         {
             var tags = await _tagRepository.GetTagsByUserIdAsync(userId);
+
+            if (tags == null)
+            {
+                return NotFound($"User with ID {userId} not found.");
+            }
+
             return Ok(tags);
         }
 
@@ -42,17 +59,28 @@ namespace Server.Controllers
         public async Task<ActionResult<TagDTO>> GetTagById(int userId, int tagId)
         {
             var tag = await _tagRepository.GetTagByIdAsync(userId, tagId);
+
             if (tag == null)
-                return NotFound();
+            {
+                return NotFound($"Tag with ID {tagId} for user with ID {userId} not found.");
+            }
             return Ok(tag);
         }
 
         [HttpPut("updateTagInfoById{userId}/{tagId}")]
         public async Task<IActionResult> UpdateTag(int userId, int tagId, TagDTO tagDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var updatedTag = await _tagRepository.UpdateTagAsync(userId, tagId, tagDto);
             if (updatedTag == null)
-                return NotFound();
+            {
+                return NotFound("Tag with ID {tagId} for user with ID {userId} not found.");
+            }
+
             return Ok(updatedTag);
         }
 
@@ -61,7 +89,9 @@ namespace Server.Controllers
         {
             var deleted = await _tagRepository.DeleteTagAsync(userId, tagId);
             if (!deleted)
-                return NotFound();
+            {
+                return NotFound("Tag with ID {tagId} for user with ID {userId} not found.");
+            }
             return NoContent();
         }
 

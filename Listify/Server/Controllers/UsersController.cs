@@ -19,53 +19,84 @@ namespace Server.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser([FromBody] UserDTO userDto)
         {
-            // Ensure the DTO does not contain UserID
-            if (userDto.UserID != 0)
+            try
             {
-                ModelState.AddModelError("UserID", "UserID should not be specified.");
-                return BadRequest(ModelState);
+                // Ensure the DTO does not contain UserID
+                if (userDto.UserID != 0)
+                {
+                    ModelState.AddModelError("UserID", "UserID should not be specified.");
+                    return BadRequest(ModelState);
+                }
+
+                var createdUser = await _userRepository.CreateUserAsync(userDto);
+                if (createdUser == null)
+                {
+                    return StatusCode(500, "An error occurred while creating the user.");
+                }
+
+                return CreatedAtAction(nameof(GetUserById), new { userId = createdUser.UserID }, createdUser);
             }
-
-            var createdUser = await _userRepository.CreateUserAsync(userDto);
-
-            return CreatedAtAction(nameof(GetUserById), new { userId = createdUser.UserID }, createdUser);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
-
 
         [HttpGet("getUserByID/{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {
-            var user = await _userRepository.GetUserByIdAsync(userId);
-            if (user == null)
+            try
             {
-                return NotFound($"User with ID {user} not found");
-            }
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound($"User with ID {userId} not found.");
+                }
 
-            return Ok(user);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("getUserByTelegramUserId/{telegramUserId}")]
         public async Task<IActionResult> GetUserByTelegramUserId(string telegramUserId)
         {
-            var user = await _userRepository.GetUserByTelegramUserIdAsync(telegramUserId);
-            if (user == null)
+            try
             {
-                return NotFound($"User with ID {telegramUserId} not found");
-            }
+                var user = await _userRepository.GetUserByTelegramUserIdAsync(telegramUserId);
+                if (user == null)
+                {
+                    return NotFound($"User with Telegram ID {telegramUserId} not found.");
+                }
 
-            return Ok(user);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
-            var result = await _userRepository.DeleteUserAsync(userId);
-            if (!result)
+            try
             {
-                return NotFound($"User with ID {userId} not found");
-            }
+                var result = await _userRepository.DeleteUserAsync(userId);
+                if (!result)
+                {
+                    return NotFound($"User with ID {userId} not found.");
+                }
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

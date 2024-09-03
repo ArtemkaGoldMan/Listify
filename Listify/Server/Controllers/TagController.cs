@@ -2,7 +2,6 @@
 using BaseLibrary.Entities;
 using Microsoft.AspNetCore.Mvc;
 using ServerLibrary.Repositories.Contracts;
-using ServerLibrary.Repositories.Implementations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,95 +21,146 @@ namespace Server.Controllers
         [HttpPost("createTag/{userId}")]
         public async Task<IActionResult> CreateTag(int userId, TagDTO tagDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            // Check if the user can add more tags
-            if (!await _tagRepository.CanAddTagAsync(userId))
+                // Check if the user can add more tags
+                if (!await _tagRepository.CanAddTagAsync(userId))
+                {
+                    return BadRequest("Tag limit reached for this user.");
+                }
+
+                var createdTag = await _tagRepository.CreateTagAsync(userId, tagDto);
+                if (createdTag == null)
+                {
+                    return NotFound($"User with ID {userId} not found.");
+                }
+
+                return CreatedAtAction(nameof(GetTagById), new { userId, tagId = createdTag.TagID }, createdTag);
+            }
+            catch (Exception ex)
             {
-                return BadRequest("Tag limit reached for this user.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            var createdTag = await _tagRepository.CreateTagAsync(userId, tagDto);
-            if(createdTag == null)
-            {
-                return NotFound($"User with ID {userId} not found.");
-            }
-
-            return CreatedAtAction(nameof(GetTagById), new { userId, tagId = createdTag.TagID }, createdTag);
         }
 
         [HttpGet("getTagsByUserId/{userId}")]
         public async Task<ActionResult<IEnumerable<TagDTO>>> GetTagsByUserId(int userId)
         {
-            var tags = await _tagRepository.GetTagsByUserIdAsync(userId);
-
-            if (tags == null)
+            try
             {
-                return NotFound($"User with ID {userId} not found.");
-            }
+                var tags = await _tagRepository.GetTagsByUserIdAsync(userId);
+                if (tags == null)
+                {
+                    return NotFound($"User with ID {userId} not found.");
+                }
 
-            return Ok(tags);
+                return Ok(tags);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("getTagInfoById/{userId}/{tagId}")]
         public async Task<ActionResult<TagDTO>> GetTagById(int userId, int tagId)
         {
-            var tag = await _tagRepository.GetTagByIdAsync(userId, tagId);
-
-            if (tag == null)
+            try
             {
-                return NotFound($"Tag with ID {tagId} for user with ID {userId} not found.");
+                var tag = await _tagRepository.GetTagByIdAsync(userId, tagId);
+                if (tag == null)
+                {
+                    return NotFound($"Tag with ID {tagId} for user with ID {userId} not found.");
+                }
+                return Ok(tag);
             }
-            return Ok(tag);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        [HttpPut("updateTagInfoById{userId}/{tagId}")]
+        [HttpPut("updateTagInfoById/{userId}/{tagId}")]
         public async Task<IActionResult> UpdateTag(int userId, int tagId, TagDTO tagDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            var updatedTag = await _tagRepository.UpdateTagAsync(userId, tagId, tagDto);
-            if (updatedTag == null)
+                var updatedTag = await _tagRepository.UpdateTagAsync(userId, tagId, tagDto);
+                if (updatedTag == null)
+                {
+                    return NotFound($"Tag with ID {tagId} for user with ID {userId} not found.");
+                }
+
+                return Ok(updatedTag);
+            }
+            catch (Exception ex)
             {
-                return NotFound("Tag with ID {tagId} for user with ID {userId} not found.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            return Ok(updatedTag);
         }
 
         [HttpDelete("deleteTag/{userId}/{tagId}")]
         public async Task<IActionResult> DeleteTag(int userId, int tagId)
         {
-            var deleted = await _tagRepository.DeleteTagAsync(userId, tagId);
-            if (!deleted)
+            try
             {
-                return NotFound("Tag with ID {tagId} for user with ID {userId} not found.");
+                var deleted = await _tagRepository.DeleteTagAsync(userId, tagId);
+                if (!deleted)
+                {
+                    return NotFound($"Tag with ID {tagId} for user with ID {userId} not found.");
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost("{userId}/addTagToContent")]
         public async Task<IActionResult> AddTagToContent(int userId, [FromBody] ContentTagDTO contentTagDto)
         {
-            var success = await _tagRepository.AddTagToContentAsync(userId, contentTagDto.ContentID, contentTagDto.TagID);
-            if (!success)
-                return NotFound();
-            return NoContent();
+            try
+            {
+                var success = await _tagRepository.AddTagToContentAsync(userId, contentTagDto.ContentID, contentTagDto.TagID);
+                if (!success)
+                {
+                    return NotFound($"Content with ID {contentTagDto.ContentID} or Tag with ID {contentTagDto.TagID} not found.");
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost("{userId}/removeTagFromContent")]
         public async Task<IActionResult> RemoveTagFromContent(int userId, [FromBody] ContentTagDTO contentTagDto)
         {
-            var success = await _tagRepository.RemoveTagFromContentAsync(userId, contentTagDto.ContentID, contentTagDto.TagID);
-            if (!success)
-                return NotFound();
-            return NoContent();
+            try
+            {
+                var success = await _tagRepository.RemoveTagFromContentAsync(userId, contentTagDto.ContentID, contentTagDto.TagID);
+                if (!success)
+                {
+                    return NotFound($"Content with ID {contentTagDto.ContentID} or Tag with ID {contentTagDto.TagID} not found.");
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }

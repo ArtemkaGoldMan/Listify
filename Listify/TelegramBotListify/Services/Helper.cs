@@ -23,47 +23,9 @@ namespace TelegramBotListify.Services
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task SendAndDeleteMessageAsync(ChatId chatId, string text, int delayMilliseconds = 1000)
         {
-            var sentMessage = await _bot.SendTextMessageAsync(chatId, text);
+            var sentMessage = await _bot.SendTextMessageAsync(chatId, text, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
             await Task.Delay(delayMilliseconds);
             await _bot.DeleteMessageAsync(chatId, sentMessage.MessageId);
-        }
-
-        public async Task DeleteAllMessagesExceptFirstAsync(long chatId)
-        {
-            var offset = -1;
-            var messages = new List<Message>();
-
-            // Step 1: Fetch all messages in the chat
-            while (true)
-            {
-                var updates = await _bot.GetUpdatesAsync(offset + 1);
-                if (updates.Length == 0) break;
-
-                foreach (var update in updates)
-                {
-                    if (update.Message != null && update.Message.Chat.Id == chatId)
-                    {
-                        messages.Add(update.Message);
-                        offset = update.Id;
-                    }
-                }
-            }
-
-            // Step 2: Delete all messages except the first one
-            if (messages.Count > 1)
-            {
-                for (int i = 1; i < messages.Count; i++)
-                {
-                    try
-                    {
-                        await _bot.DeleteMessageAsync(chatId, messages[i].MessageId);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error deleting message {messages[i].MessageId}: {ex.Message}");
-                    }
-                }
-            }
         }
 
 

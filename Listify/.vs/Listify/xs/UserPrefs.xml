@@ -1,38 +1,61 @@
 ﻿<Properties StartupConfiguration="{AD1D1674-D3C2-42FA-9A7E-85357E4C792F}|https">
-  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/BotHandler.cs">
+  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="TelegramBotListify/Program.cs">
     <Files>
-      <File FileName="TelegramBotListify/BotHandler.cs" Line="97" Column="64" />
-      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="336" Column="13" />
-      <File FileName="TelegramBotListify/Services/Helper.cs" Line="29" Column="1" />
-      <File FileName="Server/Controllers/ContentController.cs" />
-      <File FileName="Server/Controllers/TagController.cs" />
-      <File FileName="ServerLibrary/Repositories/Implementations/ContentRepository.cs" />
-      <File FileName="ServerLibrary/Repositories/Implementations/UserRepository.cs" />
-      <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" Line="72" Column="93" />
+      <File FileName="Server/Properties/launchSettings.json" />
+      <File FileName="Server/appsettings.json" />
+      <File FileName="Server/Program.cs" />
+      <File FileName="Server/Server.http" />
+      <File FileName="ServerLibrary/Data/AppDbContext.cs" />
+      <File FileName="ServerLibrary/Data/AppDbContextFactory.cs" Line="15" Column="49" />
+      <File FileName="TelegramBotListify/Program.cs" Line="1" Column="1" />
+      <File FileName="Server/appsettings.Development.json" />
+      <File FileName="BaseLibrary/DTOs/UserDTO.cs" />
+      <File FileName="TESTER/Program.cs" />
+      <File FileName="TESTER/TESTER.csproj" />
+      <File FileName="BaseLibrary/DTOs/ContentDTO.cs" Line="1" Column="1" />
+      <File FileName="BaseLibrary/Entities/Content.cs" Line="1" Column="1" />
+      <File FileName="Server/Controllers/ContentController.cs" Line="17" Column="33" />
+      <File FileName="ServerLibrary/Repositories/Implementations/TagRepository.cs" Line="23" Column="75" />
+      <File FileName="TelegramBotListify/Services/ContentManager.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/Services/Helper.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/Services/TagManager.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/Services/UserManager.cs" Line="1" Column="1" />
+      <File FileName="TelegramBotListify/BotHandler.cs" Line="82" Column="6" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Listify" expanded="True">
+            <Node name="BaseLibrary">
+              <Node name="DTOs" expanded="True" />
+              <Node name="Entities" expanded="True" />
+            </Node>
+            <Node name="Server" expanded="True">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Properties" expanded="True" />
+            </Node>
             <Node name="ServerLibrary">
+              <Node name="Data" expanded="True" />
               <Node name="Repositories" expanded="True">
+                <Node name="Contracts" expanded="True" />
                 <Node name="Implementations" expanded="True" />
               </Node>
             </Node>
-            <Node name="TelegramBotListify" selected="True" />
+            <Node name="TelegramBotListify" expanded="True">
+              <Node name="Services" expanded="True" />
+              <Node name="Program.cs" selected="True" />
+            </Node>
+            <Node name="TESTER" expanded="True" />
           </Node>
         </State>
       </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
-      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.ItemProperties.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

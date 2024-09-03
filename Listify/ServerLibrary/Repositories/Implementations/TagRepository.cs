@@ -38,7 +38,6 @@ namespace ServerLibrary.Repositories.Implementations
             var tag = new Tag
             {
                 Name = tagDto.Name,
-                Description = tagDto.Description,
                 ListOfTagsID = user.ListOfTags.ListOfTagsID
             };
 
@@ -62,7 +61,6 @@ namespace ServerLibrary.Repositories.Implementations
             {
                 TagID = tag.TagID,
                 Name = tag.Name,
-                Description = tag.Description,
                 ListOfTagsID = tag.ListOfTagsID
             };
         }
@@ -86,7 +84,6 @@ namespace ServerLibrary.Repositories.Implementations
             {
                 TagID = t.TagID,
                 Name = t.Name,
-                Description = t.Description,
                 ListOfTagsID = t.ListOfTagsID
             }).ToList();
 
@@ -103,7 +100,6 @@ namespace ServerLibrary.Repositories.Implementations
             }
 
             tag.Name = tagDto.Name;
-            tag.Description = tagDto.Description;
 
             await _context.SaveChangesAsync();
 
@@ -111,7 +107,6 @@ namespace ServerLibrary.Repositories.Implementations
             {
                 TagID = tag.TagID,
                 Name = tag.Name,
-                Description = tag.Description,
                 ListOfTagsID = tag.ListOfTagsID
             };
         }
@@ -174,6 +169,17 @@ namespace ServerLibrary.Repositories.Implementations
             return true;
         }
 
+        public async Task<bool> CanAddTagAsync(int userId)
+        {
+            var user = await _context.Users.Include(u => u.ListOfTags)
+                                           .ThenInclude(lt => lt!.Tags)
+                                           .FirstOrDefaultAsync(u => u.UserID == userId);
+
+            if (user == null || user.IsUnlimited) return true;
+
+            var tagCount = user.ListOfTags?.Tags?.Count() ?? 0;
+            return tagCount < user.MaxTags;
+        }
     }
 }
 

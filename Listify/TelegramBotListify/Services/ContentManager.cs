@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using TelegramBotListify.Services;
 using Telegram.Bot.Types.Enums;
+using System.Security.AccessControl;
 
 public class ContentManager
 {
@@ -15,6 +16,7 @@ public class ContentManager
     private readonly HttpClient _httpClient;
     private readonly Helper _helper;
     private readonly ConcurrentDictionary<long, string> _userStates;
+    private readonly ConcurrentDictionary<long, int> _promptMessageIds = new ConcurrentDictionary<long, int>();
     private readonly ConcurrentDictionary<long, HashSet<int>> _userTagSelections; // Track selected tags for each user
 
     public ContentManager(TelegramBotClient bot, HttpClient httpClient, ConcurrentDictionary<long, string> userStates, ConcurrentDictionary<long, HashSet<int>> userTagSelections)
@@ -33,7 +35,7 @@ public class ContentManager
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
     public async Task ShowContentMenu(long chatId)
     {
-        await _bot.SendTextMessageAsync(chatId, "You are in the Content Menu. Choose an option or go back to the main menu.", replyMarkup: Helper.contentMenuKeyboard);
+        await _bot.SendTextMessageAsync(chatId, $"<b>Content Menu</b>", parseMode: ParseMode.Html, replyMarkup: Helper.contentMenuKeyboard);
     }
 
     /// <summary>
@@ -42,23 +44,41 @@ public class ContentManager
     /// <param name="chatId">The unique identifier for the chat where the content options menu should be displayed.</param>
     /// <param name="contentId">The unique identifier of the content item for which the options are being displayed.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains no value.</returns>
-    public async Task HandleContentOptions(long chatId, int contentId, string contentName)
+    public async Task HandleContentOptions(long chatId, int contentId, int userID)
     {
+        // Retrieve content information
+        var contentResponse = await _httpClient.GetAsync($"api/Content/getContentById/{userID}/{contentId}");
+        if (!contentResponse.IsSuccessStatusCode)
+        {
+            await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve content information.");
+            return;
+        }
+
+        var content = await contentResponse.Content.ReadFromJsonAsync<ContentDTO>();
+        if (content == null)
+        {
+            await _helper.SendAndDeleteMessageAsync(chatId, "Content not found.");
+            return;
+        }
+
+        var contentName = content.Name;
+
+        // Create inline keyboard with options
         var inlineKeyboard = new InlineKeyboardMarkup(new[]
         {
-        new[]{ InlineKeyboardButton.WithCallbackData("Tags", $"addTag:{contentId}:{contentName}") },
-        new[]{ InlineKeyboardButton.WithCallbackData("Delete Content", $"deleteContent:{contentId}") },
-        new[]{ InlineKeyboardButton.WithCallbackData("Back to Contents", "Show Contents") }
-        });
+        new[] { InlineKeyboardButton.WithCallbackData("Tags", $"addTag:{contentId}:{contentName}") },
+        new[] { InlineKeyboardButton.WithCallbackData("Delete Content", $"deleteContent:{contentId}") },
+        new[] { InlineKeyboardButton.WithCallbackData("Back to Contents", "Show Contents") }
+    });
 
         await _bot.SendTextMessageAsync(
             chatId,
             $"<b>{contentName}</b>\nChoose an option:",
             parseMode: ParseMode.Html,
             replyMarkup: inlineKeyboard
-            );
-
+        );
     }
+
 
 
     /// <summary>
@@ -110,7 +130,7 @@ public class ContentManager
         // Create buttons for each content
         var inlineButtonsForContents = contents.Select(content => new[]
         {
-        InlineKeyboardButton.WithCallbackData(content.Name!, $"Specific Content Managing:{content.ContentID}:{content.Name!}")
+        InlineKeyboardButton.WithCallbackData(content.Name!, $"contentManage:{content.ContentID}:{user.UserID}")
         }).ToList();
 
         // Add "Content Menu" button
@@ -126,6 +146,8 @@ public class ContentManager
 
 
 
+
+
     public async Task ShowContentsToList(long chatId)
     {
         // Retrieve user information
@@ -133,22 +155,22 @@ public class ContentManager
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
         if (user == null)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "User not found.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         // Retrieve tags
-        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user.UserID}");
+        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user!.UserID}");
         if (!tagsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         var tags = await tagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
@@ -167,7 +189,7 @@ public class ContentManager
 
         // Create message with contents
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine("CONTENTS:");
+        messageBuilder.AppendLine($"<b>CONTENTS:</b>");
 
         if (contents != null && contents.Any())
         {
@@ -183,7 +205,7 @@ public class ContentManager
 
                 // Build content message with tags
                 var contentTagNames = contentTags != null ? string.Join(", ", contentTags.Select(t => t.Name)) : "No tags";
-                messageBuilder.AppendLine($"- {content.Name} [Tags: {contentTagNames}]");
+                messageBuilder.AppendLine($"- {content.Name}\n  [Tags: {contentTagNames}]");
             }
         }
         else
@@ -210,7 +232,7 @@ public class ContentManager
         var tagKeyboard = new InlineKeyboardMarkup(inlineButtons);
 
         // Send the message with the "Content Menu" button and tag keyboard
-        await _bot.SendTextMessageAsync(chatId, messageBuilder.ToString(), replyMarkup: tagKeyboard);
+        await _bot.SendTextMessageAsync(chatId, messageBuilder.ToString(), parseMode: ParseMode.Html, replyMarkup: tagKeyboard);
     }
 
 
@@ -246,22 +268,22 @@ public class ContentManager
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
         if (user == null)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "User not found.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         // Retrieve contents
-        var contentsResponse = await _httpClient.GetAsync($"api/Content/getContentsByUserId/{user.UserID}");
+        var contentsResponse = await _httpClient.GetAsync($"api/Content/getContentsByUserId/{user!.UserID}");
         if (!contentsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve contents.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         var contents = await contentsResponse.Content.ReadFromJsonAsync<IEnumerable<ContentDTO>>();
@@ -271,9 +293,9 @@ public class ContentManager
             var inlineButtons = new InlineKeyboardMarkup(new[]
             {
             InlineKeyboardButton.WithCallbackData("Content Menu")
-        });
+            });
 
-            await _bot.SendTextMessageAsync(chatId, "No contents found.", replyMarkup: inlineButtons);
+            await _bot.SendTextMessageAsync(chatId, "No contents found :(", replyMarkup: inlineButtons);
             return;
         }
 
@@ -284,13 +306,13 @@ public class ContentManager
         var inlineButtonsForContents = contents.Select(content => new[]
         {
         InlineKeyboardButton.WithCallbackData($"Delete <{content.Name}>", $"deleteContent:{content.ContentID}")
-    }).ToList();
+        }).ToList();
 
         // Add "Content Menu" button
         inlineButtonsForContents.Add(new[]
         {
         InlineKeyboardButton.WithCallbackData("Content Menu")
-    });
+        });
 
         var submenuKeyboard = new InlineKeyboardMarkup(inlineButtonsForContents);
 
@@ -352,9 +374,14 @@ public class ContentManager
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task AddContent(long chatId)
     {
-        await _helper.SendAndDeleteMessageAsync(chatId, "Please enter the name of the content:", 1500);
+        // Send the message and store the sent message's ID
+        var message = await _bot.SendTextMessageAsync(chatId, "Please enter the name of the content:");
+
+        // Store the state and the prompt message ID
         _userStates[chatId] = "awaitingContentName";
+        _promptMessageIds[chatId] = message.MessageId;
     }
+
 
     /// <summary>
     /// Handles the user's input for creating new content. 
@@ -369,6 +396,21 @@ public class ContentManager
     public async Task HandleContentNameInput(Message msg)
     {
         var contentName = msg.Text;
+
+        // Validation: Check if contentName is null or too long
+        if (string.IsNullOrWhiteSpace(contentName))
+        {
+            await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+            await _helper.SendAndDeleteMessageAsync(msg.Chat, $"<b>!!!Warning!!!</b>\nThe content name cannot be empty, GIFs, Stickers or Media( Can be Emoji 🙃 ).", 3000);
+            return; // Exit the method to wait for the next user input
+        }
+        else if (contentName.Length > 40)
+        {
+            await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+            await _helper.SendAndDeleteMessageAsync(msg.Chat, "<b>!!!Warning!!!</b>\nThe content name is too long. Please enter a name with 40 characters or less.", 3000);
+            return; // Exit the method to wait for the next user input
+        }
+
         var telegramUserId = msg.From!.Id.ToString();
 
         // Fetch user by telegram ID to get the user ID
@@ -387,7 +429,15 @@ public class ContentManager
                 }
                 else
                 {
-                    await _helper.SendAndDeleteMessageAsync(msg.Chat, "Failed to add content.");
+                    var errorMessage = await createResponse.Content.ReadAsStringAsync();
+                    if (errorMessage.Contains("Content limit reached"))
+                    {
+                        await _helper.SendAndDeleteMessageAsync(msg.Chat, "<b>!!!Warning!!!</b>\nYou have reached your limit for adding content. Please remove some existing content.", 5000);
+                    }
+                    else
+                    {
+                        await _helper.SendAndDeleteMessageAsync(msg.Chat, "<b>!!!Warning!!!</b>\nFailed to add content. Please try again later.", 5000);
+                    }
                 }
             }
         }
@@ -396,13 +446,20 @@ public class ContentManager
             await _helper.SendAndDeleteMessageAsync(msg.Chat, "Failed to retrieve user information.");
         }
 
-        // Remove the state and delete the user's message
+        // Remove the state and delete the original "Please enter the name of the content" message
         _userStates.TryRemove(msg.Chat.Id, out _);
+        if (_promptMessageIds.TryRemove(msg.Chat.Id, out var promptMessageId))
+        {
+            await _bot.DeleteMessageAsync(msg.Chat.Id, promptMessageId);
+        }
+
+        // Remove the user's input message
         await _bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
 
         // Show the Content Menu again
         await ShowContentMenu(msg.Chat.Id);
     }
+
 
     /// <summary>
     /// Displays a menu to the user for adding or removing tags from a specified content item. 
@@ -420,23 +477,23 @@ public class ContentManager
         if (!userResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve user information.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         var user = await userResponse.Content.ReadFromJsonAsync<UserDTO>();
         if (user == null)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "User not found.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
-        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user.UserID}");
+        var tagsResponse = await _httpClient.GetAsync($"api/Tag/getTagsByUserId/{user!.UserID}");
 
 
         if (!tagsResponse.IsSuccessStatusCode)
         {
             await _helper.SendAndDeleteMessageAsync(chatId, "Failed to retrieve tags.");
-            return;
+            await ShowContentMenu(chatId);
         }
 
         var tags = await tagsResponse.Content.ReadFromJsonAsync<IEnumerable<TagDTO>>();
@@ -461,12 +518,12 @@ public class ContentManager
 
         inlineButtons.Add(new[]
         {
-        InlineKeyboardButton.WithCallbackData("Content Options", $"Specific Content Managing:{contentId}:{contentName}")
+        InlineKeyboardButton.WithCallbackData("Content Options", $"contentManage:{contentId}:{user.UserID}")
         });
 
         var submenuKeyboard = new InlineKeyboardMarkup(inlineButtons);
 
-        await _bot.SendTextMessageAsync(chatId, $"<b>{contentName}</b>\nSelect a tag to add or remove:",parseMode: ParseMode.Html, replyMarkup: submenuKeyboard);
+        await _bot.SendTextMessageAsync(chatId, $"<b>{contentName}</b>\nSelect tags to add or remove:",parseMode: ParseMode.Html, replyMarkup: submenuKeyboard);
     }
 
     /// <summary>
@@ -480,6 +537,7 @@ public class ContentManager
     /// <param name="chatId">The unique identifier of the chat where the addition confirmation should be sent.</param>
     /// <param name="contentId">The ID of the content to which the tag is being added.</param>
     /// <param name="tagId">The ID of the tag to be added to the content.</param>
+    /// <param name="contentName">The name of the content for display purposes.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task AddTagToContent(long chatId, int contentId, int tagId, string contentName)
 

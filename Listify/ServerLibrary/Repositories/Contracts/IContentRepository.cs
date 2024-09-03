@@ -17,6 +17,8 @@ namespace ServerLibrary.Repositories.Contracts
 
         // Method to get all content for a user that is connected to a specific list of tags
         Task<IEnumerable<ContentDTO>> GetContentsByUserIdAndTagListAsync(int userId, IEnumerable<int> tagIds);
+
+        Task<bool> CanAddContentAsync(int userId);
     }
 }
 

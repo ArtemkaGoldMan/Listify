@@ -22,6 +22,12 @@ public class ContentController : ControllerBase
             return BadRequest(ModelState);
         }
 
+        // Check if the user can add more content
+        if (!await _contentRepository.CanAddContentAsync(userId))
+        {
+            return BadRequest("Content limit reached for this user.");
+        }
+
         var createdContent = await _contentRepository.CreateContentAsync(userId, contentDto);
         if (createdContent == null)
         {
@@ -43,7 +49,7 @@ public class ContentController : ControllerBase
         return Ok(contents);
     }
 
-    [HttpGet("{userId}/{contentId}")]
+    [HttpGet("getContentById/{userId}/{contentId}")]
     public async Task<IActionResult> GetContentById(int userId, int contentId)
     {
         var content = await _contentRepository.GetContentByIdAsync(userId, contentId);

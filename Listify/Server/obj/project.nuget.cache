@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "hdVrSRIkg5F9XF+6jZo8ocxy/z9sf2fx/0Ht3jo9oLVYK1e30p9xIdP79aeFDMJ2YSfdgP0d7CsiDt/oQbLEzw==",
+  "dgSpecHash": "WhYLKlLXUqo=",
   "success": true,
   "projectFilePath": "/Users/artemo/Projects/Listify_Project/Listify/Server/Server.csproj",
   "expectedPackageFiles": [
@@ -24,6 +24,7 @@
     "/Users/artemo/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
     "/Users/artemo/.nuget/packages/microsoft.extensions.configuration.fileextensions/8.0.0/microsoft.extensions.configuration.fileextensions.8.0.0.nupkg.sha512",
     "/Users/artemo/.nuget/packages/microsoft.extensions.configuration.json/8.0.0/microsoft.extensions.configuration.json.8.0.0.nupkg.sha512",
+    "/Users/artemo/.nuget/packages/microsoft.extensions.configuration.usersecrets/8.0.0/microsoft.extensions.configuration.usersecrets.8.0.0.nupkg.sha512",
     "/Users/artemo/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.0/microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
     "/Users/artemo/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
     "/Users/artemo/.nuget/packages/microsoft.extensions.dependencymodel/8.0.1/microsoft.extensions.dependencymodel.8.0.1.nupkg.sha512",

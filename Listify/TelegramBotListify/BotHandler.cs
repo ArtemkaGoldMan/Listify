@@ -24,8 +24,8 @@ public class BotHandler
         _httpClient = httpClient;
         _userStates = userStates;
         _contentManager = new ContentManager(bot, httpClient, userStates, userTagSelections);
-        _tagManager = new TagManager(bot, httpClient, userStates);
         _userManager = new UserManager(bot, httpClient, userStates);
+        _tagManager = new TagManager(bot, httpClient, _userManager, userStates);
         _helper = new Helper(_bot);
     }
 
@@ -116,16 +116,16 @@ public class BotHandler
                     await _tagManager.HandleDeleteTag(query.Message.Chat.Id, tagId);
                     break;
 
-                //--------------------------Contants----------------
+                //--------------------------Contents----------------
 
                 case "Show Contents":
                     await _contentManager.ShowContents(query.Message.Chat.Id);
                     break;
 
-                case "Specific Content Managing":
+                case "contentManage":
                     var contentId = int.Parse(callbackData[1]);
-                    var contentName = callbackData[2];
-                    await _contentManager.HandleContentOptions(query.Message.Chat.Id, contentId, contentName);
+                    var userId = callbackData[2];
+                    await _contentManager.HandleContentOptions(query.Message.Chat.Id, contentId, int.Parse(userId));
                     break;
 
                 case "Add Content":
@@ -143,7 +143,7 @@ public class BotHandler
 
                 case "addTag":
                     contentId = int.Parse(callbackData[1]);
-                    contentName = callbackData[2];
+                     var contentName = callbackData[2];
                     await _contentManager.ShowTagsForAdding(query.Message.Chat.Id, contentId, contentName);
                     break;
 
@@ -176,9 +176,9 @@ public class BotHandler
                     await _contentManager.HandleTagSelection(query.Message.Chat.Id, tagIdToUncount, false);
                     break;
 
-
                 default:
                     await _bot.AnswerCallbackQueryAsync(query.Id, $"Unknown command: {query.Data}");
+                    await _userManager.ShowMainMenu(query.Message.Chat.Id);
                     break;
             }
         }

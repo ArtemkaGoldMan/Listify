@@ -9,8 +9,8 @@ namespace BaseLibrary.Entities
         [Key]
         public int TagID { get; set; }
 
+        [MaxLength(20)]
         public string? Name { get; set; }
-        public string? Description { get; set; }
 
         public int ListOfTagsID { get; set; }
         [ForeignKey("ListOfTagsID")]

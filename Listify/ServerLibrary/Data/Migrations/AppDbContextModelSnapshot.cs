@@ -16,7 +16,7 @@ namespace ServerLibrary.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -29,17 +29,12 @@ namespace ServerLibrary.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ContentID"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
-
                     b.Property<int>("ListOfContentID")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.HasKey("ContentID");
 
@@ -111,14 +106,12 @@ namespace ServerLibrary.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TagID"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<int>("ListOfTagsID")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("TagID");
 
@@ -134,6 +127,15 @@ namespace ServerLibrary.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserID"));
+
+                    b.Property<bool>("IsUnlimited")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MaxContents")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxTags")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TelegramUserID")
                         .HasColumnType("text");

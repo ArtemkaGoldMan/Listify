@@ -15,6 +15,8 @@ namespace ServerLibrary.Repositories.Contracts
         //methods for associating and dissociating tags with/from content
         Task<bool> AddTagToContentAsync(int userId, int contentId, int tagId);
         Task<bool> RemoveTagFromContentAsync(int userId, int contentId, int tagId);
+
+        Task<bool> CanAddTagAsync(int userId);
     }
 }
 

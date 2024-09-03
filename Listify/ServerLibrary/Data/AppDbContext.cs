@@ -56,9 +56,6 @@ namespace ServerLibrary.Data
                 .WithMany(t => t.ContentTags)
                 .HasForeignKey(ct => ct.TagID);
 
-            modelBuilder.Entity<Content>()
-                .Property(c => c.ImageUrl)
-                .IsRequired(false);
         }
     }
 }

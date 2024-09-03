@@ -9,9 +9,8 @@ namespace BaseLibrary.Entities
         [Key]
         public int ContentID { get; set; }
 
+        [MaxLength(40)]
         public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? ImageUrl { get; set; }
 
         public int ListOfContentID { get; set; }
         [ForeignKey("ListOfContentID")]

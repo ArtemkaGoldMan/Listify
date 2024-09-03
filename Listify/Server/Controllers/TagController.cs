@@ -1,6 +1,7 @@
 ﻿using BaseLibrary.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using ServerLibrary.Repositories.Contracts;
+using ServerLibrary.Repositories.Implementations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +21,12 @@ namespace Server.Controllers
         [HttpPost("createTag/{userId}")]
         public async Task<IActionResult> CreateTag(int userId, TagDTO tagDto)
         {
+            // Check if the user can add more tags
+            if (!await _tagRepository.CanAddTagAsync(userId))
+            {
+                return BadRequest("Tag limit reached for this user.");
+            }
+
             var createdTag = await _tagRepository.CreateTagAsync(userId, tagDto);
             return CreatedAtAction(nameof(GetTagById), new { userId, tagId = createdTag.TagID }, createdTag);
         }

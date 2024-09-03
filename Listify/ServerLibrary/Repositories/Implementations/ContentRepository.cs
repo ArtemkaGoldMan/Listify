@@ -23,6 +23,7 @@ namespace ServerLibrary.Repositories.Implementations
 
         public async Task<ContentDTO> CreateContentAsync(int userId, ContentDTO contentDto)
         {
+            
             var user = await _context.Users.Include(u => u.ListOfContent).FirstOrDefaultAsync(u => u.UserID == userId);
             if (user == null)
             {
@@ -39,8 +40,6 @@ namespace ServerLibrary.Repositories.Implementations
             var content = new Content
             {
                 Name = contentDto.Name,
-                Description = contentDto.Description,
-                ImageUrl = contentDto.ImageUrl,
                 ListOfContentID = user.ListOfContent.ListOfContentID
             };
 
@@ -70,8 +69,6 @@ namespace ServerLibrary.Repositories.Implementations
             {
                 ContentID = c.ContentID,
                 Name = c.Name,
-                Description = c.Description,
-                ImageUrl = c.ImageUrl,
                 ListOfContentID = c.ListOfContentID
             }).ToList();
 
@@ -91,8 +88,6 @@ namespace ServerLibrary.Repositories.Implementations
             {
                 ContentID = content.ContentID,
                 Name = content.Name,
-                Description = content.Description,
-                ImageUrl = content.ImageUrl,
                 ListOfContentID = content.ListOfContentID
             };
         }
@@ -107,8 +102,6 @@ namespace ServerLibrary.Repositories.Implementations
             }
 
             content.Name = contentDto.Name;
-            content.Description = contentDto.Description;
-            content.ImageUrl = contentDto.ImageUrl;
 
             await _context.SaveChangesAsync();
 
@@ -116,8 +109,6 @@ namespace ServerLibrary.Repositories.Implementations
             {
                 ContentID = content.ContentID,
                 Name = content.Name,
-                Description = content.Description,
-                ImageUrl = content.ImageUrl,
                 ListOfContentID = content.ListOfContentID
             };
         }
@@ -144,7 +135,6 @@ namespace ServerLibrary.Repositories.Implementations
                {
                    TagID = ct.Tag!.TagID,
                    Name = ct.Tag.Name,
-                   Description = ct.Tag.Description,
                    ListOfTagsID = ct.Tag.ListOfTagsID
                })
                .ToListAsync();
@@ -157,19 +147,30 @@ namespace ServerLibrary.Repositories.Implementations
             // Fetch contents associated with the specified tags for the given user
             var contents = await _context.ContentTags
                 .Where(ct => ct.Content!.ListOfContent!.UserID == userId && tagIds.Contains(ct.TagID))
-                .GroupBy(ct => new { ct.Content!.ContentID, ct.Content.Name, ct.Content.Description, ct.Content.ImageUrl, ct.Content.ListOfContentID })
+                .GroupBy(ct => new { ct.Content!.ContentID, ct.Content.Name,ct.Content.ListOfContentID })
                 .Where(g => g.Select(ct => ct.TagID).Distinct().Count() == tagIds.Count())
                 .Select(g => new ContentDTO
                 {
                     ContentID = g.Key.ContentID,
                     Name = g.Key.Name,
-                    Description = g.Key.Description,
-                    ImageUrl = g.Key.ImageUrl,
                     ListOfContentID = g.Key.ListOfContentID
                 })
                 .ToListAsync();
 
             return contents;
+        }
+
+        public async Task<bool> CanAddContentAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.ListOfContent)
+                    .ThenInclude(lc => lc!.Contents)
+                .FirstOrDefaultAsync(u => u.UserID == userId);
+
+            if (user == null || user.IsUnlimited) return true;
+
+            var contentCount = user.ListOfContent?.Contents?.Count() ?? 0;
+            return contentCount < user.MaxContents;
         }
 
     }

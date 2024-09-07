@@ -13,7 +13,6 @@
 3. **Content**:
    - `ContentID` (primary key)
    - `Name`
-   - `Description`
    - `ListOfContentID` (foreign key)
 
 4. **ListOfTags**:
@@ -23,7 +22,6 @@
 5. **Tag**:
    - `TagID` (primary key)
    - `Name`
-   - `Description`
    - `ListOfTagsID` (foreign key)
 
 6. **ContentTag** (Junction table for many-to-many relationship between Content and Tag):

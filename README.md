@@ -12,6 +12,10 @@ Listify is a Telegram bot project built with ASP.NET that allows users to manage
 - **Telegram Sharing**: Easily share your content lists with friends via Telegram.
 - **Interactive Menus**: Utilize the Telegram bot interface to manage content and tags in a user-friendly way.
 
+## Video Demo
+
+Watch the demo on [YouTube](https://youtu.be/_XW32ZAWyOw).
+
 ## Technologies Used
 
 - **ASP.NET Core 8.0**: Web framework used to build the bot's server and APIs.
@@ -98,16 +102,17 @@ Listify is a Telegram bot project built with ASP.NET that allows users to manage
 
 ### Main Menu
 
-*Add a screenshot of the bot's main interface here*
+![Main menu](https://github.com/user-attachments/assets/ec4dba05-592d-4956-a0d3-153a7c852ffa)
 
 ### Tag Management
 
-*Add a screenshot showing tag creation and management*
+![Tag Menu](https://github.com/user-attachments/assets/c73bc996-c941-4dee-9aec-e06abac1c0de)
 
 ### Content Management
 
-*Add a screenshot showing how content is added and filtered by tags*
+![Content Menu](https://github.com/user-attachments/assets/9434979f-a31d-4f9f-9456-548bdac42bab)
 
-## Video Demo
+### Sorting Management
 
-Watch the demo on [YouTube](https://youtu.be/_XW32ZAWyOw).
+![Sorting](https://github.com/user-attachments/assets/3f030f90-b450-4ce5-8576-89dfe55447e2)
+
